@@ -1,0 +1,4 @@
+def TEXTURES_PATH = "assets/minecraft/textures"
+
+template something { name = "something" }
+template something { name name name name name name name name name }

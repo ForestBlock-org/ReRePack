@@ -1,0 +1,4 @@
+def something = "something"
+def something_else = "something else i guess"
+
+template something() {}

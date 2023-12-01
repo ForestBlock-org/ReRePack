@@ -1,0 +1,15 @@
+def filename = "textures/custom_armor"
+def name = "custom armor"
+
+match {
+    "$(DISPLAY).Name" = "ipattern:*$(name)*"
+} for {
+    items {
+        "*_helmet"     = "$(filename)_helmet"
+        "*_chestplate" = "$(filename)_chestplate"
+    }
+    items = "$(filename)" {
+        "*_leggings"
+        "*_boots"
+    }
+}
