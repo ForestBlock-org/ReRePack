@@ -28,7 +28,8 @@ public class RePackLexerSpecification extends LexerSpecification {
             "global",
             "any",
             "items",
-            "write"
+            "write",
+            "require"
     );
 
     @NotNull

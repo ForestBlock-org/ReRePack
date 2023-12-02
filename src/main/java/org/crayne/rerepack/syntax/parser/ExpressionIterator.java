@@ -77,6 +77,14 @@ public class ExpressionIterator implements Iterator<TokenSpecification> {
                 .map(e -> (Scope) e);
     }
 
+    public int expressionIndex() {
+        return expressionIndex;
+    }
+
+    public int tokenIndex() {
+        return tokenIndex;
+    }
+
     @NotNull
     public String toString() {
         return "ExpressionIterator{" +

@@ -86,6 +86,24 @@ public class WorkspaceBuilder {
         } catch (final DefinitionException e) {
             return;
         }
+        /*System.out.println("global variables:");
+        workspace.definitionContainer().definitions().forEach((key, value) ->
+                System.out.println("global definition: " + key.token() + " = " + value.token()));
+
+        packNodeMap.forEach((pack, node) -> {
+            System.out.println("local definitions in" + pack.name() + ": ");
+            pack.localDefinitionContainer().definitions().forEach((key, value) ->
+                    System.out.println("    local definition: " + key.token() + " = " + value.token()));
+
+            System.out.println("match statements:");
+            pack.replacements().forEach(replacement -> {
+                replacement.matches().forEach((key, value) ->
+                        System.out.println("    required nbt: " + key.token() + " = " + value.token()));
+                replacement.replacements().forEach((key, value) ->
+                        System.out.println("    will replace: " + key.token() + " with " + value.token()));
+            });
+            System.out.println("-".repeat(24));
+        });*/
     }
 
     @NotNull
@@ -111,7 +129,7 @@ public class WorkspaceBuilder {
     private static Set<Predicate> parseIndividualItemPredicates(@NotNull final Node replacementExpressions) {
         return replacementExpressions.children(ITEMS_STATEMENT_INDIVIDUAL)
                 .stream()
-                .map(n -> n.child(1))
+                .map(n -> n.child(2))
                 .map(WorkspaceBuilder::parseSingleItemSetPredicate)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
@@ -130,8 +148,8 @@ public class WorkspaceBuilder {
         return replacementExpressions.children(ITEMS_STATEMENT_SETALL)
                 .stream()
                 .map(n -> {
-                    final Token value = n.child(2).valueClean();
-                    return parseSingleItemIdentifier(n.child(3), value);
+                    final Token value = n.child(5).valueClean();
+                    return parseSingleItemIdentifier(n.child(2), value);
                 })
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
@@ -146,8 +164,8 @@ public class WorkspaceBuilder {
     }
 
     private static void parseMatchStatement(@NotNull final Pack pack, @NotNull final Node node) {
-        final Set<Predicate> matches = parseMatches(node.child(1));
-        final Set<Predicate> replacements = parseReplacements(node.child(3));
+        final Set<Predicate> matches = parseMatches(node.child(2));
+        final Set<Predicate> replacements = parseReplacements(node.child(6));
 
         pack.createReplacement(matches, replacements);
     }
@@ -155,6 +173,7 @@ public class WorkspaceBuilder {
     @NotNull
     private static Set<Predicate> parseMatches(@NotNull final Node node) {
         final List<Node> matchExpressions = node.children(SINGLE_MATCH_EXPRESSION);
+
         return matchExpressions.stream()
                 .map(WorkspaceBuilder::parseDefaultPredicate)
                 .collect(Collectors.toSet());

@@ -72,7 +72,8 @@ public class RePackParserSpecification {
                 matchKeyword = literal("match"),
                 writeKeyword = literal("write"),
                 templateKeyword = literal("template"),
-                useKeyword = literal("use");
+                useKeyword = literal("use"),
+                requireKeyword = literal("require");
 
         final TokenType
                 identifier = token(IDENTIFIER),
@@ -88,7 +89,7 @@ public class RePackParserSpecification {
                 singleMatchExpression = expr(stringLiteral, equalsSign, stringLiteral),
                 itemSingleSetPredicate = expr(stringLiteral, equalsSign, stringLiteral),
                 itemSingleIdentifier = expr(stringLiteral),
-                itemSetAllPrefix = expr(itemsKeyword, equalsSign, stringLiteral),
+                itemSetAllSuffix = expr(equalsSign, stringLiteral),
                 itemPrefix = expr(itemsKeyword),
                 forPrefix = expr(forKeyword),
                 matchPrefix = expr(matchKeyword),
@@ -96,7 +97,7 @@ public class RePackParserSpecification {
                 singleWriteLine = expr(stringLiteral),
                 templatePrefix = expr(templateKeyword, identifier),
                 useStatement = expr(useKeyword, identifier),
-                templateParam = expr(identifier),
+                templateParam = expr(requireKeyword, identifier),
                 templateParamWithDefault = expr(identifier, equalsSign, stringLiteral),
                 useParam = expr(identifier, equalsSign, stringLiteral),
                 optionalComma = expr(commaSign);
@@ -107,7 +108,7 @@ public class RePackParserSpecification {
                 setallItemScope = createScope().rule(ITEM_SINGLE_IDENTIFIER, itemSingleIdentifier),
                 forScope = createScope()
                         .rule(ITEMS_STATEMENT_INDIVIDUAL, itemPrefix, individualItemScope)
-                        .rule(ITEMS_STATEMENT_SETALL, itemSetAllPrefix, setallItemScope),
+                        .rule(ITEMS_STATEMENT_SETALL, itemPrefix, setallItemScope, itemSetAllSuffix),
                 writeScope = createScope()
                         .rule(WRITE_STATEMENT_SINGLE_LINE, singleWriteLine),
                 templateParamScope = createParameterScope()

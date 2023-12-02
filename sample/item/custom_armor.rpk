@@ -8,8 +8,8 @@ match {
         "*_helmet"     = "$(filename)_helmet"
         "*_chestplate" = "$(filename)_chestplate"
     }
-    items = "$(filename)" {
+    items {
         "*_leggings"
         "*_boots"
-    }
+    } = "$(filename)"
 }

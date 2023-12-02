@@ -29,4 +29,12 @@ public abstract class AbstractLoggingMessage {
 
     public abstract void printTo(@NotNull final Logger logger);
 
+    @NotNull
+    public String toString() {
+        return "AbstractLoggingMessage{" +
+                "message='" + message + '\'' +
+                ", level=" + level +
+                '}';
+    }
+
 }

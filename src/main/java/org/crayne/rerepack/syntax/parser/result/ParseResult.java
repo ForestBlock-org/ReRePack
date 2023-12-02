@@ -1,5 +1,6 @@
 package org.crayne.rerepack.syntax.parser.result;
 
+import org.crayne.rerepack.syntax.ast.Node;
 import org.crayne.rerepack.util.logging.message.AbstractLoggingMessage;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,13 +14,16 @@ public interface ParseResult {
     Optional<AbstractLoggingMessage> resultLogMessage();
 
     @NotNull
+    Optional<Node> node();
+
+    @NotNull
     static ErrorResult error(@NotNull final AbstractLoggingMessage errorMessage) {
         return new ErrorResult(errorMessage);
     }
 
     @NotNull
-    static OkayResult ok(final int nextIndex) {
-        return new OkayResult(nextIndex);
+    static OkayResult ok(final int nextIndex, @NotNull final Node node) {
+        return new OkayResult(nextIndex, node);
     }
 
     default boolean ok() {
