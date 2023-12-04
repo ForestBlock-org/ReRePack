@@ -1,66 +1,51 @@
 package org.crayne.rerepack.workspace;
 
-import org.crayne.rerepack.syntax.Token;
-import org.crayne.rerepack.workspace.util.pack.Pack;
-import org.crayne.rerepack.workspace.util.pack.PackException;
-import org.crayne.rerepack.workspace.util.replacement.template.Template;
+import org.crayne.rerepack.workspace.pack.PackFile;
+import org.crayne.rerepack.workspace.pack.definition.GlobalDefinitionContainer;
+import org.crayne.rerepack.workspace.pack.template.TemplateContainer;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
-public class Workspace extends AbstractWorkspace {
-
-    @NotNull
-    private final Map<String, Template> templates;
+public class Workspace {
 
     @NotNull
-    private final Map<String, Pack> packages;
+    private final GlobalDefinitionContainer globalDefinitionContainer;
+
+    @NotNull
+    private final TemplateContainer templateContainer;
+
+    @NotNull
+    private final Set<PackFile> packFiles;
 
     public Workspace() {
-        super();
-        templates = new HashMap<>();
-        packages = new HashMap<>();
+        this.globalDefinitionContainer = new GlobalDefinitionContainer();
+        this.templateContainer = new TemplateContainer();
+        this.packFiles = new HashSet<>();
     }
 
     @NotNull
-    public Map<String, Template> templates() {
-        return templates;
-    }
-
-    public void createTemplate(@NotNull final Token name, @NotNull final Template template) {
-        if (templates().containsKey(name.token())) throw new PackException(name, "A template named '" + name.token() + "' already exists; " +
-                "Cannot create a new one with the same name");
-
-        templates().put(name.token(), template);
+    public PackFile createPackage(@NotNull final String name) {
+        final PackFile packFile = new PackFile(name, this, globalDefinitionContainer);
+        packFiles.add(packFile);
+        return packFile;
     }
 
     @NotNull
-    public Optional<Template> findTemplate(@NotNull final String name) {
-        return Optional.ofNullable(templates().get(name));
+    public Set<PackFile> packFiles() {
+        return Collections.unmodifiableSet(packFiles);
     }
 
     @NotNull
-    public Template template(@NotNull final Token name) {
-        return findTemplate(name.token())
-                .orElseThrow(() -> new PackException(name, "Cannot find a template named '"
-                        + name + "' in this workspace"));
+    public GlobalDefinitionContainer globalDefinitionContainer() {
+        return globalDefinitionContainer;
     }
 
     @NotNull
-    public Map<String, Pack> packages() {
-        return packages;
-    }
-
-    @NotNull
-    public Pack createPackage(@NotNull final String name) {
-        if (packages().containsKey(name)) throw new PackException("A pack named '" + name + "' already exists; " +
-                "Cannot create a new one with the same name");
-
-        final Pack pack = new Pack(name, this);
-        packages().put(name, pack);
-        return pack;
+    public TemplateContainer templateContainer() {
+        return templateContainer;
     }
 
 }

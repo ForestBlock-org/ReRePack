@@ -20,16 +20,18 @@ public class RePackLexerSpecification extends LexerSpecification {
 
     @NotNull
     private static final Set<String> KEYWORDS = Set.of(
-            "template",
-            "use",
-            "match",
-            "for",
             "def",
             "global",
-            "any",
+
+            "template",
+            "use",
+            "require",
+
+            "match",
+            "replace",
             "items",
-            "write",
-            "require"
+
+            "write"
     );
 
     @NotNull

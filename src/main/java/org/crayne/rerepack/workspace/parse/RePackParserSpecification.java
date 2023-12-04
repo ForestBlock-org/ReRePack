@@ -53,7 +53,7 @@ public class RePackParserSpecification {
             ITEMS_STATEMENT_SETALL = "itemsStatementSetall",
             WRITE_STATEMENT = "writeStatement",
             WRITE_STATEMENT_SINGLE_LINE = "writeStatementSingleLine",
-            TEMPLATE_PARAM_SPEC = "templateParamSpec",
+            TEMPLATE_PARAM_SPEC_REQUIRED = "templateParamSpecRequired",
             TEMPLATE_PARAM_SPEC_WITH_DEFAULT = "templateParamSpecWithDefault",
             OPTIONAL_COMMA = "optionalComma",
             USE_PARAM_SPEC = "useParamSpec",
@@ -67,13 +67,16 @@ public class RePackParserSpecification {
         final Literal
                 defKeyword = literal("def"),
                 globalKeyword = literal("global"),
-                itemsKeyword = literal("items"),
-                forKeyword = literal("for"),
-                matchKeyword = literal("match"),
-                writeKeyword = literal("write"),
+
                 templateKeyword = literal("template"),
                 useKeyword = literal("use"),
-                requireKeyword = literal("require");
+                requireKeyword = literal("require"),
+
+                matchKeyword = literal("match"),
+                replaceKeyword = literal("replace"),
+                itemsKeyword = literal("items"),
+
+                writeKeyword = literal("write");
 
         final TokenType
                 identifier = token(IDENTIFIER),
@@ -91,7 +94,7 @@ public class RePackParserSpecification {
                 itemSingleIdentifier = expr(stringLiteral),
                 itemSetAllSuffix = expr(equalsSign, stringLiteral),
                 itemPrefix = expr(itemsKeyword),
-                forPrefix = expr(forKeyword),
+                replacePrefix = expr(replaceKeyword),
                 matchPrefix = expr(matchKeyword),
                 writePrefix = expr(writeKeyword, stringLiteral),
                 singleWriteLine = expr(stringLiteral),
@@ -106,13 +109,13 @@ public class RePackParserSpecification {
                 matchScope = createScope().rule(SINGLE_MATCH_EXPRESSION, singleMatchExpression),
                 individualItemScope = createScope().rule(ITEM_SINGLE_SET_PREDICATE, itemSingleSetPredicate),
                 setallItemScope = createScope().rule(ITEM_SINGLE_IDENTIFIER, itemSingleIdentifier),
-                forScope = createScope()
+                replaceScope = createScope()
                         .rule(ITEMS_STATEMENT_INDIVIDUAL, itemPrefix, individualItemScope)
                         .rule(ITEMS_STATEMENT_SETALL, itemPrefix, setallItemScope, itemSetAllSuffix),
                 writeScope = createScope()
                         .rule(WRITE_STATEMENT_SINGLE_LINE, singleWriteLine),
                 templateParamScope = createParameterScope()
-                        .rule(TEMPLATE_PARAM_SPEC, templateParam)
+                        .rule(TEMPLATE_PARAM_SPEC_REQUIRED, templateParam)
                         .rule(TEMPLATE_PARAM_SPEC_WITH_DEFAULT, templateParamWithDefault)
                         .rule(OPTIONAL_COMMA, optionalComma),
                 useParamScope = createParameterScope()
@@ -121,13 +124,13 @@ public class RePackParserSpecification {
 
                 templateScope = createScope()
                         .rule(DEFINITION_STATEMENT, definitionStatement)
-                        .rule(MATCH_STATEMENT, matchPrefix, matchScope, forPrefix, forScope)
+                        .rule(MATCH_STATEMENT, matchPrefix, matchScope, replacePrefix, replaceScope)
                         .rule(WRITE_STATEMENT, writePrefix, writeScope),
 
                 parentScope = parent()
                         .rule(DEFINITION_STATEMENT, definitionStatement)
                         .rule(GLOBAL_DEFINITION_STATEMENT, globalDefinitionStatement)
-                        .rule(MATCH_STATEMENT, matchPrefix, matchScope, forPrefix, forScope)
+                        .rule(MATCH_STATEMENT, matchPrefix, matchScope, replacePrefix, replaceScope)
                         .rule(WRITE_STATEMENT, writePrefix, writeScope)
                         .rule(TEMPLATE_STATEMENT, templatePrefix, templateParamScope, templateScope)
                         .rule(USE_STATEMENT, useStatement, useParamScope);

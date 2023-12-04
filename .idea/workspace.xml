@@ -1,25 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="ReRePack:jar" />
+    </artifacts-to-build>
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fa8e8d78-b363-4df8-82ca-a951938c61c4" name="Changes" comment="initial commit">
+    <list default="true" id="fa8e8d78-b363-4df8-82ca-a951938c61c4" name="Changes" comment="full parser rewrite with much cleaner code -&gt; can now finally start working on the more important stuff (templates)">
+      <change afterPath="$PROJECT_DIR$/.idea/artifacts/ReRePack_jar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sample/template_test.rpk" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/logging/message/PositionInformationMessage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/except/DefinitionException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/except/WorkspaceException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/PackFile.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/PackScope.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/container/MapContainer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/definition/Definition.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/definition/DefinitionContainer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/definition/GlobalDefinitionContainer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/match/MatchReplaceContainer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/match/MatchReplaceStatement.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/template/Template.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/template/TemplateContainer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/write/WriteContainer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/write/WriteStatement.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/parse/parseable/Parseable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/predicate/Predicate.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/predicate/TokenPredicate.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/items_vanilla.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sample/item/custom_armor.rpk" beforeDir="false" afterPath="$PROJECT_DIR$/sample/item/custom_armor.rpk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample/template_test.rpk" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/parser/ExpressionIterator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/parser/ExpressionIterator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/Token.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/Token.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/ast/Node.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/ast/Node.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/ast/NodeType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/ast/NodeType.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/parser/ExpressionParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/parser/ExpressionParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/parser/result/ErrorResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/parser/result/ErrorResult.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/parser/result/OkayResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/parser/result/OkayResult.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/parser/result/ParseResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/parser/result/ParseResult.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/parser/rule/Scope.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/parser/rule/Scope.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/logging/message/AbstractLoggingMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/logging/message/AbstractLoggingMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/logging/LoggingLevel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/logging/LoggingLevel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/logging/message/LoggingMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/logging/message/LoggingMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/logging/message/TraceBackMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/logging/message/TraceBackMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/minecraft/VanillaItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/minecraft/VanillaItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/AbstractWorkspace.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/Workspace.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/Workspace.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/WorkspaceBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/WorkspaceBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/WorkspaceException.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/parse/RePackLexerSpecification.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/parse/RePackLexerSpecification.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/parse/RePackParserSpecification.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/parse/RePackParserSpecification.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.rpk" beforeDir="false" afterPath="$PROJECT_DIR$/test.rpk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/util/def/DefinitionContainer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/util/except/DefinitionException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/util/pack/Pack.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/util/pack/PackException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/util/replacement/Replacement.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/util/replacement/predicate/Predicate.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/util/replacement/predicate/PredicateException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/util/replacement/template/Template.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.rpk" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,26 +92,34 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/crayne/ReRePack/src/main/java/org/crayne/rerepack/util&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "last_opened_file_path": "/home/crayne/ReRePack/ReRePack.jar",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util" />
       <recent name="$PROJECT_DIR$/src/main/java/org/crayne/rerepack" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/resources" />
+      <recent name="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/minecraft" />
+    </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="org.crayne.rerepack.workspace.pack.definition" />
       <recent name="org.crayne.rerepack.util.minecraft" />
       <recent name="org.crayne.rerepack.syntax.ast" />
       <recent name="org.crayne.rerepack.syntax.lexer" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JAR Application.Unnamed">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="org.crayne.rerepack.Main" />
       <module name="ReRePack" />
@@ -87,6 +133,16 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Unnamed" type="JarApplication" nameIsGenerated="true">
+      <option name="JAR_PATH" value="$PROJECT_DIR$/ReRePack.jar" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Application.Main" />
+      <item itemvalue="JAR Application.Unnamed" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.Main" />
@@ -109,7 +165,14 @@
       <option name="project" value="LOCAL" />
       <updated>1701465812873</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="full parser rewrite with much cleaner code -&gt; can now finally start working on the more important stuff (templates)">
+      <created>1701537539808</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1701537539808</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -125,6 +188,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="initial commit" />
+    <MESSAGE value="full parser rewrite with much cleaner code -&gt; can now finally start working on the more important stuff (templates)" />
+    <option name="LAST_COMMIT_MESSAGE" value="full parser rewrite with much cleaner code -&gt; can now finally start working on the more important stuff (templates)" />
   </component>
 </project>

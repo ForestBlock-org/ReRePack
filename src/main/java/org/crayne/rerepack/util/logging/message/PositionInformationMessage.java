@@ -6,31 +6,27 @@ import org.crayne.rerepack.util.logging.LoggingLevel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
 
-public class TraceBackMessage extends AbstractLoggingMessage {
+public class PositionInformationMessage extends AbstractLoggingMessage {
 
     @NotNull
-    private final String @NotNull [] hints;
+    private final Token at;
 
     @NotNull
-    private final PositionInformationMessage positionInformationMessage;
+    private final String lineInCode;
 
-    public TraceBackMessage(@NotNull final String message, @NotNull final LoggingLevel level,
+    private final boolean skipToEnd;
+
+    public PositionInformationMessage(@NotNull final LoggingLevel level,
                             @NotNull final Token at, @NotNull final String lineInCode,
-                            final boolean skipToEnd,
-                            @NotNull final String @NotNull ... hints) {
-        super(message, level);
-        this.hints = hints;
-        this.positionInformationMessage = new PositionInformationMessage(level, at, lineInCode, skipToEnd);
-    }
+                            final boolean skipToEnd) {
+        super("at line " + at.line() + ", " + "column " + at.column()
+                + (at.file() != null ? " in file " + at.file().getAbsolutePath() : ""), level);
 
-    public void printTo(@NotNull final Logger logger) {
-        logger.log(message(), level());
-        Arrays.stream(hints).forEach(h -> logger.log(h, LoggingLevel.HELP));
-
-        logger.log(positionInformationMessage);
+        this.at = at;
+        this.lineInCode = lineInCode;
+        this.skipToEnd = skipToEnd;
     }
 
     public static class Builder {
@@ -41,37 +37,23 @@ public class TraceBackMessage extends AbstractLoggingMessage {
         @Nullable
         private String lineInCode;
 
-        @NotNull
-        private String @NotNull [] hints;
-
         private boolean skipToEnd;
-
-        @NotNull
-        private String message;
 
         @NotNull
         private LoggingLevel level;
 
-        public Builder(@NotNull final String message, @NotNull final LoggingLevel level) {
-            this.message = message;
+        public Builder(@NotNull final LoggingLevel level) {
             this.level = level;
-            this.hints = new String[0];
         }
 
         @NotNull
-        public static Builder createBuilder(@NotNull final String message,
-                                            @NotNull final LoggingLevel level) {
-            return new Builder(message, level);
+        public static Builder createBuilder(@NotNull final LoggingLevel level) {
+            return new Builder(level);
         }
 
         @Nullable
         public LoggingLevel level() {
             return level;
-        }
-
-        @NotNull
-        public String message() {
-            return message;
         }
 
         @Nullable
@@ -89,25 +71,8 @@ public class TraceBackMessage extends AbstractLoggingMessage {
         }
 
         @NotNull
-        public String @Nullable [] hints() {
-            return hints;
-        }
-
-        @NotNull
         public Builder at(@NotNull final Token at) {
             this.at = at;
-            return this;
-        }
-
-        @NotNull
-        public Builder hints(@NotNull final String @NotNull ... hints) {
-            this.hints = hints;
-            return this;
-        }
-
-        @NotNull
-        public Builder message(@NotNull final String message) {
-            this.message = message;
             return this;
         }
 
@@ -148,16 +113,28 @@ public class TraceBackMessage extends AbstractLoggingMessage {
         }
 
         @NotNull
-        public TraceBackMessage build() {
+        public PositionInformationMessage build() {
             if (at == null)
                 throw new UnsupportedOperationException("Cannot create traceback message if at-token is null");
 
             if (lineInCode == null)
                 throw new UnsupportedOperationException("Cannot create traceback message if line in code is null");
 
-            return new TraceBackMessage(message, level, at, lineInCode, skipToEnd, hints);
+            return new PositionInformationMessage(level, at, lineInCode, skipToEnd);
         }
 
     }
+
+    public void printTo(@NotNull final Logger logger) {
+        logger.log(message(), level());
+
+        final int cursorOffset = skipToEnd ? lineInCode.length() : at.column() - 1;
+        final String cursorOffsetSpace = " ".repeat(Math.max(0, cursorOffset));
+
+        logger.log(lineInCode.replace("\t", " "), LoggingLevel.INFO);
+        logger.log(cursorOffsetSpace + "^", LoggingLevel.INFO);
+    }
+
+
 
 }

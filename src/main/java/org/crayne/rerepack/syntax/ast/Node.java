@@ -52,7 +52,7 @@ public class Node {
                 @NotNull final LexerSpecification lexerSpecification) {
         this.type = NodeType.of(token, lexerSpecification);
         this.value = token;
-        this.name = lexerSpecification.removeStringLiterals(token.token());
+        this.name = lexerSpecification.removeStringLiterals(token.toString());
         children = new ArrayList<>();
     }
 

@@ -3,7 +3,7 @@ def name = "custom armor"
 
 match {
     "$(DISPLAY).Name" = "ipattern:*$(name)*"
-} for {
+} replace {
     items {
         "*_helmet"     = "$(filename)_helmet"
         "*_chestplate" = "$(filename)_chestplate"

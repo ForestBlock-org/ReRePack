@@ -66,7 +66,7 @@ public class LoggingMessage extends AbstractLoggingMessage {
 
     @NotNull
     public static LoggingMessage analyzingError(@NotNull final String message) {
-        return new LoggingMessage(message, LoggingLevel.ANALYZING_ERROR);
+        return new LoggingMessage(message, LoggingLevel.WORKSPACE_ERROR);
     }
 
 }

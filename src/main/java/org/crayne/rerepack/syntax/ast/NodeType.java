@@ -40,7 +40,7 @@ public enum NodeType {
 
     @NotNull
     public static NodeType of(@NotNull final Token token, @NotNull final LexerSpecification specification) {
-        return of(token.token(), specification);
+        return of(token.toString(), specification);
     }
 
     @NotNull
@@ -56,7 +56,7 @@ public enum NodeType {
     @NotNull
     public static TokenSpecification tokenSpecification(@NotNull final Token token,
                                                         @NotNull final LexerSpecification specification) {
-        return tokenSpecification(token.token(), specification);
+        return tokenSpecification(token.toString(), specification);
     }
 
     @NotNull

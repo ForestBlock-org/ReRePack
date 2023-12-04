@@ -1,0 +1,13 @@
+template something(require name, name2 = "hi") {
+    def test = "$(name).png"
+
+    match {
+        "nbt.display.Name" = "$(var)"
+    } replace {
+        items {
+            "*_shulker_box"
+        } = "$(test)"
+    }
+
+
+}

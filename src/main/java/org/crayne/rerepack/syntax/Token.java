@@ -35,12 +35,9 @@ public record Token(@NotNull String token, int line, int column, @Nullable File 
         return token.hashCode();
     }
 
+    @NotNull
     public String toString() {
-        return "Token{" +
-                "token='" + token + '\'' +
-                ", line=" + line +
-                ", column=" + column +
-                ", file=" + file +
-                '}';
+        return token;
     }
+
 }

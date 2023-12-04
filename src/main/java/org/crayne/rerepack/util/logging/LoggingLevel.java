@@ -17,7 +17,7 @@ public enum LoggingLevel {
     LEXING_ERROR     (foreground(Color.rgb(255, 0, 0))),
     PARSING_ERROR    (foreground(Color.rgb(255, 0, 0))),
     DEFINITION_ERROR (foreground(Color.rgb(255, 0, 0))),
-    ANALYZING_ERROR  (foreground(Color.rgb(255, 0, 0))),
+    WORKSPACE_ERROR  (foreground(Color.rgb(255, 0, 0))),
     CONVERTING_ERROR (foreground(Color.rgb(255, 0, 0))),
     PACKING_ERROR    (foreground(Color.rgb(255, 0, 0)));
 
@@ -36,7 +36,7 @@ public enum LoggingLevel {
     public boolean error() {
         return switch (this) {
             case ERROR, LEXING_ERROR, PARSING_ERROR,
-                    CONVERTING_ERROR, PACKING_ERROR, ANALYZING_ERROR -> true;
+                    CONVERTING_ERROR, PACKING_ERROR, WORKSPACE_ERROR -> true;
             default -> false;
         };
     }

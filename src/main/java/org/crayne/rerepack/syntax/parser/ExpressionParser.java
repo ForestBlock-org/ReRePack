@@ -308,17 +308,17 @@ public class ExpressionParser {
                 .map(Optional::get)
                 .toList();
 
-        if (possibleCandidates.isEmpty()) return parserError("Unexpected token '" + token.token() + "'", token);
+        if (possibleCandidates.isEmpty()) return parserError("Unexpected token '" + token + "'", token);
 
         if (possibleCandidates.size() == 1) {
             final String candidate = possibleCandidates.get(0);
-            return parserError("Unexpected token '" + token.token() + "'", token,
+            return parserError("Unexpected token '" + token + "'", token,
                     "Expected token: " + candidate,
-                    "Replace '" + token.token() + "' with " + candidate + " to fix this issue.", "");
+                    "Replace '" + token + "' with " + candidate + " to fix this issue.", "");
         }
-        return parserError("Unexpected token '" + token.token() + "'", token,
+        return parserError("Unexpected token '" + token + "'", token,
                 "Expected possible token(s):", String.join(", ", possibleCandidates),
-                "Replace '" + token.token() + "' with any of the above candidates to fix this issue.", "");
+                "Replace '" + token + "' with any of the above candidates to fix this issue.", "");
     }
 
 }
