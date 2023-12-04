@@ -25,6 +25,8 @@ public class WriteStatement {
         this.lines = new ArrayList<>();
     }
 
+    // TODO make this a Parseable and add parseFromAST
+
     public void addLine(@NotNull final Token lineToken) {
         lines.add(lineToken);
     }
