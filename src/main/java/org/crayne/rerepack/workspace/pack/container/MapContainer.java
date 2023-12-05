@@ -41,16 +41,26 @@ public class MapContainer<T> {
         return definition;
     }
 
-    private void handleRedefined(@NotNull final Token identifier) throws DefinitionException {
+    @NotNull
+    public String cannotRedefinePreviousDefinitionString() {
+        return "Cannot redefine previous definition";
+    }
+
+    @NotNull
+    public String cannotFindDefinitionString() {
+        return "Cannot find definition";
+    }
+
+    protected void handleRedefined(@NotNull final Token identifier) throws DefinitionException {
         final Optional<T> previousDefinition = findDefinition(identifier);
         if (previousDefinition.isEmpty()) return;
 
         final Optional<Token> previousDefinitionToken = findDefiningToken(previousDefinition.get());
 
         if (previousDefinitionToken.isEmpty())
-            throw new DefinitionException("Cannot redefine previous definition " + previousDefinition.get(), identifier);
+            throw new DefinitionException(cannotRedefinePreviousDefinitionString() + " " + previousDefinition.get(), identifier);
 
-        throw new DefinitionException("Cannot redefine previous definition " + previousDefinition.get(),
+        throw new DefinitionException(cannotRedefinePreviousDefinitionString() + " " + previousDefinition.get(),
                 identifier, previousDefinitionToken.get());
     }
 
@@ -87,7 +97,15 @@ public class MapContainer<T> {
     @NotNull
     public T definition(@NotNull final Token identifier) throws DefinitionException {
         return findDefinition(identifier).orElseThrow(() ->
-                new DefinitionException("Cannot find definition '" + identifier + "'", identifier));
+                new DefinitionException(cannotFindDefinitionString() + " '" + identifier + "'", identifier));
     }
-    
+
+    @NotNull
+    public String toString() {
+        return "MapContainer{" +
+                "definitions=" + definitions +
+                //", parent=" + parent +
+                '}';
+    }
+
 }

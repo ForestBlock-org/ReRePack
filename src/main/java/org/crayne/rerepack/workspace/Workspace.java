@@ -48,4 +48,13 @@ public class Workspace {
         return templateContainer;
     }
 
+    @NotNull
+    public String toString() {
+        return "Workspace{" +
+                "globalDefinitionContainer=" + globalDefinitionContainer +
+                ", templateContainer=" + templateContainer +
+                ", packFiles=" + packFiles +
+                '}';
+    }
+
 }

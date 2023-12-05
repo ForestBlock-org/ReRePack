@@ -4,6 +4,10 @@ import org.crayne.rerepack.syntax.Token;
 import org.crayne.rerepack.syntax.ast.Node;
 import org.crayne.rerepack.util.minecraft.VanillaItem;
 import org.crayne.rerepack.workspace.except.WorkspaceException;
+import org.crayne.rerepack.workspace.pack.PackScope;
+import org.crayne.rerepack.workspace.pack.definition.Definition;
+import org.crayne.rerepack.workspace.pack.definition.DefinitionContainer;
+import org.crayne.rerepack.workspace.parse.parseable.Initializable;
 import org.crayne.rerepack.workspace.parse.parseable.Parseable;
 import org.crayne.rerepack.workspace.predicate.TokenPredicate;
 import org.jetbrains.annotations.NotNull;
@@ -13,20 +17,26 @@ import java.util.stream.Collectors;
 
 import static org.crayne.rerepack.workspace.parse.RePackParserSpecification.*;
 
-public class MatchReplaceStatement implements Parseable {
+public class MatchReplaceStatement implements Parseable, Initializable {
 
     @NotNull
     private final Set<TokenPredicate> matches, replacements;
 
-    public MatchReplaceStatement(@NotNull final Set<TokenPredicate> matches,
-                                 @NotNull final Set<TokenPredicate> replacements) {
-        this.matches = new HashSet<>(matches);
-        this.replacements = new HashSet<>(replacements);
-    }
+    @NotNull
+    private final DefinitionContainer definitionContainer;
 
-    public MatchReplaceStatement() {
+    public MatchReplaceStatement(@NotNull final DefinitionContainer definitionContainer) {
+        this.definitionContainer = definitionContainer;
         this.matches = new HashSet<>();
         this.replacements = new HashSet<>();
+    }
+
+    public MatchReplaceStatement(@NotNull final DefinitionContainer definitionContainer,
+                                 @NotNull final Set<TokenPredicate> matches,
+                                 @NotNull final Set<TokenPredicate> replacements) {
+        this.definitionContainer = definitionContainer;
+        this.matches = TokenPredicate.copyAll(matches);
+        this.replacements = TokenPredicate.copyAll(replacements);
     }
 
     @NotNull
@@ -41,7 +51,7 @@ public class MatchReplaceStatement implements Parseable {
                 .collect(Collectors.toSet());
     }
 
-    public void parseFromAST(@NotNull final Node ast) throws WorkspaceException {
+    public void parseFromAST(@NotNull final Node ast, @NotNull final PackScope packScope) throws WorkspaceException {
         final Set<TokenPredicate> matches = parseMatches(ast.child(2));
         final Set<TokenPredicate> replacements = parseReplacements(ast.child(6));
 
@@ -49,10 +59,19 @@ public class MatchReplaceStatement implements Parseable {
         for (final TokenPredicate replace : replacements) replace(replace);
     }
 
+    public void initialize() throws WorkspaceException {
+        for (final TokenPredicate match : matches)
+            Definition.initializeDefinition(match, definitionContainer);
+
+        for (final TokenPredicate replace : replacements)
+            Definition.initializeDefinition(replace, definitionContainer);
+    }
+
     public void match(@NotNull final TokenPredicate match) throws WorkspaceException {
         if (matches.contains(match))
             throw new WorkspaceException("Duplicate match " + match);
 
+        Definition.ensureValidDefinition(match, definitionContainer);
         matches.add(match);
     }
 
@@ -60,6 +79,7 @@ public class MatchReplaceStatement implements Parseable {
         if (replacements.contains(replace))
             throw new WorkspaceException("Duplicate replacement " + replace);
 
+        Definition.ensureValidDefinition(replace, definitionContainer);
         replacements.add(replace);
     }
 
@@ -101,6 +121,7 @@ public class MatchReplaceStatement implements Parseable {
 
     @NotNull
     private static Set<TokenPredicate> parseSetallItemPredicates(@NotNull final Node replacementExpressions) {
+        //System.out.println(replacementExpressions);
         return replacementExpressions.children(ITEMS_STATEMENT_SETALL)
                 .stream()
                 .map(n -> {
@@ -110,6 +131,23 @@ public class MatchReplaceStatement implements Parseable {
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
     }
+
+    /*
+    scope [
+                expression(itemsStatementSetall) [
+                    literal(items)
+                    special_character({)
+                    scope [
+                        expression(itemSingleIdentifier) [
+                            string_literal(*$(item_suffix))
+                        ]
+                    ]
+                    special_character(})
+                    special_character(=)
+                    string_literal($(test))
+                ]
+            ]
+     */
 
     @NotNull
     private static Set<TokenPredicate> parseSingleItemIdentifier(@NotNull final Node node,
@@ -136,6 +174,15 @@ public class MatchReplaceStatement implements Parseable {
         replacements.addAll(parseIndividualItemPredicates(node));
         replacements.addAll(parseSetallItemPredicates(node));
         return replacements;
+    }
+
+    @NotNull
+    public String toString() {
+        return "MatchReplaceStatement{" +
+                "matches=" + matches +
+                ", replacements=" + replacements +
+                ", definitionContainer=" + definitionContainer +
+                '}';
     }
 
 }

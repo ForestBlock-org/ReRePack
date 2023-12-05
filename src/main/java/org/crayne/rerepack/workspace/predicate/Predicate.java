@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public class Predicate<T> {
 
     @NotNull
-    private final T t1, t2;
+    private T t1, t2;
 
     public Predicate(@NotNull final T t1, @NotNull final T t2) {
         this.t1 = t1;
@@ -17,9 +17,17 @@ public class Predicate<T> {
         return t1;
     }
 
+    public void key(@NotNull final T t1) {
+        this.t1 = t1;
+    }
+
     @NotNull
     public T value() {
         return t2;
+    }
+
+    public void value(@NotNull final T t2) {
+        this.t2 = t2;
     }
 
     @NotNull

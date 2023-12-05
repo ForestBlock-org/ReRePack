@@ -24,7 +24,6 @@ public class RePackLexerSpecification extends LexerSpecification {
             "global",
 
             "template",
-            "use",
             "require",
 
             "match",

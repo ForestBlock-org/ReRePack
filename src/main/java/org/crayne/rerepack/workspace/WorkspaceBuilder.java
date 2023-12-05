@@ -3,11 +3,11 @@ package org.crayne.rerepack.workspace;
 import org.apache.commons.io.FileUtils;
 import org.crayne.rerepack.syntax.ast.Node;
 import org.crayne.rerepack.syntax.parser.ExpressionParser;
-import org.crayne.rerepack.syntax.parser.except.ParserException;
+import org.crayne.rerepack.syntax.parser.except.SyntaxException;
 import org.crayne.rerepack.util.logging.Logger;
 import org.crayne.rerepack.util.logging.LoggingLevel;
 import org.crayne.rerepack.util.logging.message.PositionInformationMessage;
-import org.crayne.rerepack.workspace.except.DefinitionException;
+import org.crayne.rerepack.util.minecraft.VanillaItem;
 import org.crayne.rerepack.workspace.except.WorkspaceException;
 import org.crayne.rerepack.workspace.pack.PackFile;
 import org.crayne.rerepack.workspace.parse.parseable.Parseable;
@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class WorkspaceBuilder {
 
@@ -54,7 +55,7 @@ public class WorkspaceBuilder {
                 final File packFile = packFileIterator.next();
                 parsePackFile(packFile, packNodeMap);
             }
-        } catch (final IOException | ParserException e) {
+        } catch (final IOException | SyntaxException e) {
             logger.log(e.getMessage(), LoggingLevel.PARSING_ERROR);
             return;
         } catch (final WorkspaceException e) {
@@ -65,11 +66,22 @@ public class WorkspaceBuilder {
         parseAllFromAST(packNodeMap, packFile -> workspace.templateContainer());
         parseAllFromAST(packNodeMap, PackFile::definitionContainer);
         parseAllFromAST(packNodeMap, PackFile::matchReplaceContainer);
+        parseAllFromAST(packNodeMap, PackFile::writeContainer);
+        parseAllFromAST(packNodeMap, PackFile::useContainer);
 
         forEachPackFile(packNodeMap, (packFile, node) -> {
             try {
-                packFile.definitionContainer().initializeDefinitions();
-            } catch (final DefinitionException e) {
+                packFile.useContainer().applyAll(packFile, workspace.templateContainer());
+                packFile.initialize(); // also handles global definitions
+                packFile.matchReplaceContainer().matchesReplacements()
+                        .forEach(matchReplaceStatement -> {
+                                matchReplaceStatement.matches().forEach(System.out::println);
+                                matchReplaceStatement.replacements().stream().map(
+                                        t -> VanillaItem.allMatching(t.key().token()).stream().map(s -> s + " = " + t.value()).collect(Collectors.joining("\n"))
+                                ).forEach(System.out::println);
+                                System.out.println("-".repeat(24));
+            });
+            } catch (final WorkspaceException e) {
                 handleWorkspaceError(packFile, e);
             }
         });
@@ -79,7 +91,7 @@ public class WorkspaceBuilder {
                                  @NotNull final Function<PackFile, Parseable> parseableFunction) {
         forEachPackFile(packFileNodeMap, (packFile, ast) -> {
             try {
-                parseableFunction.apply(packFile).parseFromAST(ast);
+                parseableFunction.apply(packFile).parseFromAST(ast, packFile);
             } catch (final WorkspaceException e) {
                 handleWorkspaceError(packFile, e);
             }
@@ -109,7 +121,7 @@ public class WorkspaceBuilder {
 
     private void handleWorkspaceError(@NotNull final PackFile pack, @NotNull final WorkspaceException e) {
         logger.log(e.getMessage(), LoggingLevel.WORKSPACE_ERROR);
-        Arrays.stream(e.traceBackTokens()).forEach(t -> logger.log(PositionInformationMessage.Builder
+        e.traceBackTokens().forEach(t -> logger.log(PositionInformationMessage.Builder
                 .createBuilder(LoggingLevel.HELP)
                 .positionInformation(t, packContentMap.get(pack))
                 .build()));

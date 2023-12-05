@@ -6,7 +6,7 @@ import org.crayne.rerepack.syntax.ast.Node;
 import org.crayne.rerepack.syntax.ast.NodeType;
 import org.crayne.rerepack.syntax.lexer.Lexer;
 import org.crayne.rerepack.syntax.lexer.LexerSpecification;
-import org.crayne.rerepack.syntax.parser.except.ParserException;
+import org.crayne.rerepack.syntax.parser.except.SyntaxException;
 import org.crayne.rerepack.syntax.parser.result.ErrorResult;
 import org.crayne.rerepack.syntax.parser.result.ParseResult;
 import org.crayne.rerepack.syntax.parser.rule.Scope;
@@ -105,6 +105,13 @@ public class ExpressionParser {
     @NotNull
     public ErrorResult parserError(@NotNull final String message, @NotNull final Token at,
                                    @NotNull final String @NotNull ... hints) {
+        return parserError(message, at, false, hints);
+    }
+
+    @NotNull
+    public ErrorResult parserError(@NotNull final String message, @NotNull final Token at,
+                                   final boolean skipToEnd,
+                                   @NotNull final String @NotNull ... hints) {
         if (contentList == null)
             throw new UnsupportedOperationException("Cannot invoke parser error without file content information");
 
@@ -112,6 +119,7 @@ public class ExpressionParser {
                 .createBuilder(message, LoggingLevel.PARSING_ERROR)
                 .positionInformation(at, contentList)
                 .hints(hints)
+                .skipToEnd(skipToEnd)
                 .build());
     }
 
@@ -132,6 +140,7 @@ public class ExpressionParser {
 
             if (handleNextExpressionStart(expressionNode)) {
                 addExpressionToScope(scopeNode, expressionNode);
+
                 expectedTokens = nextTokens();
                 expressionNode = Node.of(NodeType.EXPRESSION);
             }
@@ -139,7 +148,9 @@ public class ExpressionParser {
 
             if (endOfScope && !handleDuplicateEndOfScope) {
                 nextTokens();
-                addExpressionToScopeAtNextStart(scopeNode, expressionNode);
+                final Optional<ErrorResult> result = addExpressionToScopeAtNextStart(scopeNode, expressionNode);
+                if (result.isPresent()) return result.get();
+
                 return ParseResult.ok(i - 1, scopeNode);
             }
             if (iterators.isEmpty()) return unexpectedToken(nextToken, expectedTokens);
@@ -159,10 +170,16 @@ public class ExpressionParser {
             handleDuplicateEndOfScope = false;
             addTokenToExpression(expressionNode, nextToken);
         }
+        if (parentScope.end().isPresent()) {
+            final String qualifiedIdent = parentScope.end().get().qualifiedIdentifier().orElseThrow();
+            return parserError("Reached end of file, but scope was not closed. Expected "
+                    + qualifiedIdent, tokens.get(tokens.size() - 1), true);
+        }
         nextTokens();
         addExpressionToScopeAtNextStart(scopeNode, expressionNode);
         return ParseResult.ok(tokens.size(), scopeNode);
     }
+
     private void removeUnexpectedTokenIterators(@NotNull final Set<ExpectedToken> expectedTokens,
                                                 @NotNull final Node expressionNode,
                                                 @NotNull final Token nextToken) {
@@ -172,7 +189,6 @@ public class ExpressionParser {
                 .forEach(iterators::remove);
 
         iterators.removeIf(it -> !it.hasNext());
-        expressionNodeName(expressionNode);
     }
 
     private void expressionNodeName(@NotNull final Node expressionNode) {
@@ -194,22 +210,34 @@ public class ExpressionParser {
         return true;
     }
 
-    private void addExpressionToScope(@NotNull final Node scopeNode, @NotNull final Node expressionNode) {
-        if (!expressionNode.children().isEmpty()) scopeNode.addChildren(expressionNode);
+    @NotNull
+    private Optional<ErrorResult> addExpressionToScope(@NotNull final Node scopeNode, @NotNull final Node expressionNode) {
+        if (expressionNode.children().isEmpty()) return Optional.empty();
+
+        if (expressionNode.name().isEmpty())
+            return Optional.of(parserError("Cannot add nameless expression to scope",
+                    Objects.requireNonNull(expressionNode.child(0).value())));
+
+        scopeNode.addChildren(expressionNode);
+
+        return Optional.empty();
     }
 
     private void addTokenToExpression(@NotNull final Node expressionNode, @NotNull final Token nextToken) {
         expressionNode.addChildren(new Node(nextToken, lexerSpecification));
     }
 
-    private void addExpressionToScopeAtNextStart(@NotNull final Node scopeNode, @NotNull final Node expressionNode) {
-        if (handleNextExpressionStart(expressionNode)) addExpressionToScope(scopeNode, expressionNode);
+    @NotNull
+    private Optional<ErrorResult> addExpressionToScopeAtNextStart(@NotNull final Node scopeNode, @NotNull final Node expressionNode) {
+        if (!handleNextExpressionStart(expressionNode)) return Optional.empty();
+
+        return addExpressionToScope(scopeNode, expressionNode);
     }
 
     private void handleAmbiguousResult(@NotNull final Set<ParseResult> successfulScopeParses,
                                        @NotNull final ParseResult result) {
         if (successfulScopeParses.stream().anyMatch(r -> !r.equals(result)))
-            throw new ParserException("Ambiguous scope rule definitions, " +
+            throw new SyntaxException("Ambiguous scope rule definitions, " +
                     "cannot find scope end token index " + successfulScopeParses);
     }
 
@@ -259,6 +287,7 @@ public class ExpressionParser {
         iterators.removeIf(it -> errorScopeIterator(scopeParsingResults, it));
 
         final Set<ParseResult> successfulScopeParses = filterScopeResults(scopeParsingResults, ParseResult::ok);
+
         final Set<ParseResult> errorScopeParses = filterScopeResults(scopeParsingResults, ParseResult::error);
 
         if (successfulScopeParses.isEmpty() && !errorScopeParses.isEmpty())

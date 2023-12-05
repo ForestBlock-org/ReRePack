@@ -1,4 +1,5 @@
 global SHADER_PATH = "assets/minecraft/shaders/core"
+def test = "aaaa"
 
 write "$(SHADER_PATH)/rendertype_gui.fsh" {
 

@@ -69,7 +69,6 @@ public class RePackParserSpecification {
                 globalKeyword = literal("global"),
 
                 templateKeyword = literal("template"),
-                useKeyword = literal("use"),
                 requireKeyword = literal("require"),
 
                 matchKeyword = literal("match"),
@@ -99,7 +98,7 @@ public class RePackParserSpecification {
                 writePrefix = expr(writeKeyword, stringLiteral),
                 singleWriteLine = expr(stringLiteral),
                 templatePrefix = expr(templateKeyword, identifier),
-                useStatement = expr(useKeyword, identifier),
+                useStatement = expr(identifier),
                 templateParam = expr(requireKeyword, identifier),
                 templateParamWithDefault = expr(identifier, equalsSign, stringLiteral),
                 useParam = expr(identifier, equalsSign, stringLiteral),

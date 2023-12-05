@@ -5,9 +5,14 @@ import org.crayne.rerepack.syntax.ast.Node;
 import org.crayne.rerepack.workspace.except.DefinitionException;
 import org.crayne.rerepack.workspace.except.WorkspaceException;
 import org.crayne.rerepack.workspace.pack.PackScope;
+import org.crayne.rerepack.workspace.pack.definition.Definition;
 import org.crayne.rerepack.workspace.pack.definition.DefinitionContainer;
 import org.crayne.rerepack.workspace.pack.match.MatchReplaceContainer;
+import org.crayne.rerepack.workspace.pack.match.MatchReplaceStatement;
+import org.crayne.rerepack.workspace.pack.template.use.UseContainer;
+import org.crayne.rerepack.workspace.pack.template.use.UseStatement;
 import org.crayne.rerepack.workspace.pack.write.WriteContainer;
+import org.crayne.rerepack.workspace.pack.write.WriteStatement;
 import org.crayne.rerepack.workspace.parse.parseable.Parseable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,20 +39,120 @@ public class Template implements PackScope, Parseable {
     @NotNull
     private final WriteContainer writeContainer;
 
-    public Template(@NotNull final Token identifier, @NotNull final Map<Token, Optional<Token>> parameters) {
+    @NotNull
+    private final UseContainer useContainer;
+
+    public Template(@NotNull final Token identifier,
+                    @NotNull final DefinitionContainer parentContainer,
+                    @NotNull final Map<Token, Optional<Token>> parameters) throws DefinitionException {
         this.identifier = identifier;
         this.parameters = new HashMap<>(parameters);
-        this.definitionContainer = new DefinitionContainer();
-        this.matchReplaceContainer = new MatchReplaceContainer();
-        this.writeContainer = new WriteContainer();
+        this.definitionContainer = new DefinitionContainer(parentContainer);
+        this.matchReplaceContainer = new MatchReplaceContainer(definitionContainer);
+        this.writeContainer = new WriteContainer(definitionContainer);
+        this.useContainer = new UseContainer(definitionContainer);
+
+        declareParameters();
     }
 
-    public Template() {
+    public Template(@NotNull final DefinitionContainer parentContainer) {
         this.identifier = null;
         this.parameters = new HashMap<>();
-        this.definitionContainer = new DefinitionContainer();
-        this.matchReplaceContainer = new MatchReplaceContainer();
-        this.writeContainer = new WriteContainer();
+        this.definitionContainer = new DefinitionContainer(parentContainer);
+        this.matchReplaceContainer = new MatchReplaceContainer(definitionContainer);
+        this.writeContainer = new WriteContainer(definitionContainer);
+        this.useContainer = new UseContainer(definitionContainer);
+    }
+
+    private void declareParameters() throws DefinitionException {
+        for (final Token p : parameters.keySet()) {
+            definitionContainer.createDefinition(p, Token.of("$(" + p.token() + ")", p));
+
+            final Optional<Token> defaultValue = parameters.get(p);
+            if (defaultValue.isEmpty()) continue;
+            Definition.ensureValidDefinition(defaultValue.get(), definitionContainer);
+        }
+    }
+
+    public void applyTemplate(@NotNull final PackScope usedIn,
+                              @NotNull final UseStatement useStatement,
+                              @NotNull final TemplateContainer templateContainer) throws WorkspaceException {
+        applyTemplate(usedIn, useStatement.givenParameters(), useStatement.identifier(), templateContainer);
+    }
+
+    public void applyTemplate(@NotNull final PackScope usedIn,
+                              @NotNull final DefinitionContainer givenParameters,
+                              @NotNull final Token calledAt,
+                              @NotNull final TemplateContainer templateContainer) throws WorkspaceException {
+        final DefinitionContainer temporaryContainer = new DefinitionContainer(usedIn.definitionContainer());
+        putAllParameters(temporaryContainer, givenParameters, calledAt);
+
+        applyMatchStatements(usedIn, temporaryContainer);
+        applyWriteStatements(usedIn, temporaryContainer);
+        useContainer.applyAll(usedIn, templateContainer);
+    }
+
+    private void handleMissingParameter(@NotNull final Token ident,
+                                        @NotNull final Token calledAt,
+                                        @NotNull final DefinitionContainer givenParameters) throws DefinitionException {
+        if (givenParameters.definitions().containsKey(ident)) return;
+
+        final Optional<Token> defaultParamter = parameters.get(ident);
+        if (defaultParamter.isPresent()) {
+            givenParameters.createDefinition(ident, defaultParamter.get());
+            return;
+        }
+
+        throw new DefinitionException("Cannot use template '" + identifier + "'," +
+                " missing parameter: " + ident, calledAt, ident);
+    }
+
+    private void handleRedundantParameters(@NotNull final Token calledAt,
+                                           @NotNull final List<Token> redundantParameters) throws DefinitionException {
+        if (redundantParameters.isEmpty()) return;
+
+        redundantParameters.add(calledAt); // for error traceback purposes, nothing else
+        throw new DefinitionException("Cannot use template '" + identifier + "'," +
+                " redundant parameters: " + redundantParameters, redundantParameters);
+    }
+
+    private void putAllParameters(@NotNull final DefinitionContainer temporaryContainer,
+                                  @NotNull final DefinitionContainer givenParameters,
+                                  @NotNull final Token calledAt) throws DefinitionException {
+        final List<Token> redundantGivenParameters = new ArrayList<>(givenParameters.definitions().keySet());
+
+        for (final Token ident : definitionContainer().definitions().keySet()) {
+            if (!parameters.containsKey(ident)) {
+                temporaryContainer.addDefinition(ident, definitionContainer().definition(ident));
+                continue;
+            }
+            handleMissingParameter(ident, calledAt, givenParameters);
+
+            final Token givenValue = givenParameters.definition(ident).fullValue();
+            temporaryContainer.createDefinition(ident, givenValue);
+            redundantGivenParameters.remove(ident);
+        }
+        handleRedundantParameters(calledAt, redundantGivenParameters);
+    }
+
+    private void applyMatchStatements(@NotNull final PackScope usedIn,
+                                      @NotNull final DefinitionContainer temporaryContainer) {
+        for (final MatchReplaceStatement matchReplaceStatement : matchReplaceContainer().matchesReplacements()) {
+            final MatchReplaceStatement finalizedStatement = new MatchReplaceStatement(temporaryContainer,
+                    matchReplaceStatement.matches(), matchReplaceStatement.replacements());
+
+            usedIn.matchReplaceContainer().addMatchReplaceStatement(finalizedStatement);
+        }
+    }
+
+    private void applyWriteStatements(@NotNull final PackScope usedIn,
+                                      @NotNull final DefinitionContainer temporaryContainer) {
+        for (final WriteStatement writeStatement : writeContainer().writeStatements()) {
+            final WriteStatement finalizedStatement = new WriteStatement(temporaryContainer,
+                    writeStatement.destinationPath(), writeStatement.lines());
+
+            usedIn.writeContainer().addWriteStatement(finalizedStatement);
+        }
     }
 
     @NotNull
@@ -71,11 +176,16 @@ public class Template implements PackScope, Parseable {
     }
 
     @NotNull
+    public UseContainer useContainer() {
+        return useContainer;
+    }
+
+    @NotNull
     public Map<Token, Optional<Token>> parameters() {
         return Collections.unmodifiableMap(parameters);
     }
 
-    public void parseFromAST(@NotNull final Node ast) throws WorkspaceException {
+    public void parseFromAST(@NotNull final Node ast, @NotNull final PackScope packScope) throws WorkspaceException {
         final Token templateIdentifier = ast.child(1).value();
         assert templateIdentifier != null;
 
@@ -85,9 +195,11 @@ public class Template implements PackScope, Parseable {
         final Map<Token, Optional<Token>> templateParameters = parseTemplateParameters(templateParametersNode);
         identifier = templateIdentifier;
         parameters.putAll(templateParameters);
+        declareParameters();
 
-        definitionContainer().parseFromAST(templateScope);
-        matchReplaceContainer().parseFromAST(templateScope);
+        definitionContainer().parseFromAST(templateScope, packScope);
+        matchReplaceContainer().parseFromAST(templateScope, packScope);
+        writeContainer().parseFromAST(templateScope, packScope);
     }
 
     private void parseDefaultTemplateParameters(@NotNull final Node templateParameters,
@@ -117,7 +229,7 @@ public class Template implements PackScope, Parseable {
 
         for (final Token identifier : requiredParameters) {
             if (result.containsKey(identifier))
-                throw new DefinitionException("Duplicate template " + "parameter '" + identifier + "'", identifier);
+                throw new DefinitionException("Duplicate template parameter '" + identifier + "'", identifier);
 
             result.put(identifier, Optional.empty());
         }
@@ -131,6 +243,18 @@ public class Template implements PackScope, Parseable {
         parseDefaultTemplateParameters(templateParameters, result);
 
         return result;
+    }
+
+    @NotNull
+    public String toString() {
+        return "Template{" +
+                "identifier=" + identifier +
+                ", parameters=" + parameters +
+                ", definitionContainer=" + definitionContainer +
+                ", matchReplaceContainer=" + matchReplaceContainer +
+                ", writeContainer=" + writeContainer +
+                ", useContainer=" + useContainer +
+                '}';
     }
 
 }

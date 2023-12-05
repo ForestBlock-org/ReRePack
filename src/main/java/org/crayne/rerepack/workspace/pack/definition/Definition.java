@@ -2,6 +2,7 @@ package org.crayne.rerepack.workspace.pack.definition;
 
 import org.crayne.rerepack.syntax.Token;
 import org.crayne.rerepack.workspace.except.DefinitionException;
+import org.crayne.rerepack.workspace.pack.container.MapContainer;
 import org.crayne.rerepack.workspace.predicate.TokenPredicate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,20 +35,30 @@ public class Definition {
     }
 
     @NotNull
+    public Token fullValue() {
+        return initializedValue().orElse(definition.value());
+    }
+
+    @NotNull
+    public TokenPredicate fullDefinition() {
+        return new TokenPredicate(definition.key(), fullValue());
+    }
+
+    @NotNull
     public Optional<Token> initializedValue() {
         return Optional.ofNullable(initializedValue);
     }
 
     @NotNull
     public String toString() {
-        return definition.toString();
+        return definition.key() + " = \"" + fullValue() + "\"";
     }
 
-    public void initializeDefinition(@NotNull final DefinitionContainer definitionContainer) throws DefinitionException {
+    public void initializeDefinition(@NotNull final MapContainer<Definition> definitionContainer) throws DefinitionException {
         initializeDefinition(definitionContainer, new HashSet<>());
     }
 
-    public void initializeDefinition(@NotNull final DefinitionContainer definitionContainer,
+    public void initializeDefinition(@NotNull final MapContainer<Definition> definitionContainer,
                                      @NotNull final Set<Token> currentlyDefining) throws DefinitionException {
         if (initializedValue != null) return;
 
@@ -55,28 +66,73 @@ public class Definition {
         final Token initializedAt = definition.value();
 
         currentlyDefining.add(definedAt);
+        initializedValue = parseValueByDefinitions(initializedAt, definitionContainer, currentlyDefining);
+    }
 
-        String result = initializedAt.toString();
+    @NotNull
+    public static Token parseValueByDefinitions(@NotNull final Token value,
+                                                @NotNull final MapContainer<Definition> definitionContainer) throws DefinitionException {
+        return parseValueByDefinitions(value, definitionContainer, false);
+    }
 
+    @NotNull
+    public static Token parseValueByDefinitions(@NotNull final Token value,
+                                                @NotNull final MapContainer<Definition> definitionContainer,
+                                                final boolean ignoreInitialization) throws DefinitionException {
+        return parseValueByDefinitions(value, definitionContainer, new HashSet<>(), ignoreInitialization);
+    }
+
+    @NotNull
+    public static Token parseValueByDefinitions(@NotNull final Token value,
+                                                @NotNull final MapContainer<Definition> definitionContainer,
+                                                @NotNull final Set<Token> currentlyDefining) throws DefinitionException {
+        return parseValueByDefinitions(value, definitionContainer, currentlyDefining, false);
+    }
+
+    public static void ensureValidDefinition(@NotNull final Token value,
+                                             @NotNull final DefinitionContainer definitionContainer) throws DefinitionException {
+        parseValueByDefinitions(value, definitionContainer, true);
+    }
+
+    public static void ensureValidDefinition(@NotNull final TokenPredicate values,
+                                             @NotNull final DefinitionContainer definitionContainer) throws DefinitionException {
+        ensureValidDefinition(values.key(), definitionContainer);
+        ensureValidDefinition(values.value(), definitionContainer);
+    }
+
+    public static void initializeDefinition(@NotNull final TokenPredicate values,
+                                             @NotNull final DefinitionContainer definitionContainer) throws DefinitionException {
+        values.key(parseValueByDefinitions(values.key(), definitionContainer));
+        values.value(parseValueByDefinitions(values.value(), definitionContainer));
+    }
+
+    @NotNull
+    public static Token parseValueByDefinitions(@NotNull final Token value,
+                                                @NotNull final MapContainer<Definition> definitionContainer,
+                                                @NotNull final Set<Token> currentlyDefining,
+                                                final boolean ignoreInitialization) throws DefinitionException {
+        String result = value.toString();
         final Matcher definitionMatcher = Pattern.compile("\\$\\((.*?)\\)").matcher(result);
 
         while (definitionMatcher.find()) {
-            final Token definitionName = Token.of(definitionMatcher.group(1), definedAt);
+            final Token definitionName = Token.of(definitionMatcher.group(1), value);
             final Definition definitionValue = definitionContainer.definition(definitionName);
+            if (ignoreInitialization) continue;
+
             final boolean uninitialized = definitionValue.initializedValue().isEmpty();
 
             if (uninitialized) {
                 final boolean cyclicDefinition = currentlyDefining.contains(definitionName);
                 if (cyclicDefinition)
                     throw new DefinitionException("Invalid use of uninitialized variable '" + definitionName + "'",
-                            initializedAt, definitionValue.definition.key());
+                            value, definitionValue.definition.key());
 
                 definitionValue.initializeDefinition(definitionContainer, currentlyDefining);
             }
-
-            result = result.replace("$(" + definitionName + ")", definitionValue.toString());
+            result = result.replace("$(" + definitionName + ")",
+                    definitionValue.initializedValue().orElseThrow().toString());
         }
-        initializedValue = Token.of(result, initializedAt);
+        return Token.of(result, value);
     }
 
     public int hashCode() {
