@@ -6,7 +6,9 @@ import org.crayne.rerepack.workspace.predicate.TokenPredicate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,19 +44,35 @@ public class Definition {
     }
 
     public void initializeDefinition(@NotNull final DefinitionContainer definitionContainer) throws DefinitionException {
+        initializeDefinition(definitionContainer, new HashSet<>());
+    }
+
+    public void initializeDefinition(@NotNull final DefinitionContainer definitionContainer,
+                                     @NotNull final Set<Token> currentlyDefining) throws DefinitionException {
+        if (initializedValue != null) return;
+
         final Token definedAt = definition.key();
         final Token initializedAt = definition.value();
 
+        currentlyDefining.add(definedAt);
+
         String result = initializedAt.toString();
-        final Matcher definitionMatcher = Pattern.compile(("\\$\\((.*?)\\)")).matcher(result);
+
+        final Matcher definitionMatcher = Pattern.compile("\\$\\((.*?)\\)").matcher(result);
 
         while (definitionMatcher.find()) {
             final Token definitionName = Token.of(definitionMatcher.group(1), definedAt);
             final Definition definitionValue = definitionContainer.definition(definitionName);
             final boolean uninitialized = definitionValue.initializedValue().isEmpty();
 
-            if (uninitialized)
-                throw new DefinitionException("Invalid use of uninitialized variable '" + definitionName + "'");
+            if (uninitialized) {
+                final boolean cyclicDefinition = currentlyDefining.contains(definitionName);
+                if (cyclicDefinition)
+                    throw new DefinitionException("Invalid use of uninitialized variable '" + definitionName + "'",
+                            initializedAt, definitionValue.definition.key());
+
+                definitionValue.initializeDefinition(definitionContainer, currentlyDefining);
+            }
 
             result = result.replace("$(" + definitionName + ")", definitionValue.toString());
         }

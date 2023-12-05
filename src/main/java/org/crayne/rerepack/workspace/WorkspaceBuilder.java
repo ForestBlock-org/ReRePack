@@ -7,6 +7,7 @@ import org.crayne.rerepack.syntax.parser.except.ParserException;
 import org.crayne.rerepack.util.logging.Logger;
 import org.crayne.rerepack.util.logging.LoggingLevel;
 import org.crayne.rerepack.util.logging.message.PositionInformationMessage;
+import org.crayne.rerepack.workspace.except.DefinitionException;
 import org.crayne.rerepack.workspace.except.WorkspaceException;
 import org.crayne.rerepack.workspace.pack.PackFile;
 import org.crayne.rerepack.workspace.parse.parseable.Parseable;
@@ -65,8 +66,13 @@ public class WorkspaceBuilder {
         parseAllFromAST(packNodeMap, PackFile::definitionContainer);
         parseAllFromAST(packNodeMap, PackFile::matchReplaceContainer);
 
-        // TODO handle definition initialization properly so that order of definition
-        //  does not matter -> handle cyclic definitions and disallow those
+        forEachPackFile(packNodeMap, (packFile, node) -> {
+            try {
+                packFile.definitionContainer().initializeDefinitions();
+            } catch (final DefinitionException e) {
+                handleWorkspaceError(packFile, e);
+            }
+        });
     }
 
     private void parseAllFromAST(@NotNull final Map<PackFile, Node> packFileNodeMap,
