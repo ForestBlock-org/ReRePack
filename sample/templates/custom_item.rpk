@@ -1,0 +1,9 @@
+template create_custom_item(require name, require replacement_item) {
+    match {
+        "nbt.CustomItem" = "$(name)"
+    } replace {
+        items {
+            "$(replacement_item)"
+        } = "$(ITEM_TEXTURES)/$(name).png"
+    }
+}

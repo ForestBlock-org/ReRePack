@@ -1,0 +1,10 @@
+template create_pack_mcmeta(pack_version = "$(PACK_VERSION_1_20_1)", require description) {
+    write "pack.mcmeta" {
+        "{"
+        "   \"pack\": {"
+        "      \"pack_format\": $(pack_version),"
+        "      \"description\": \"$(description)\""
+        "   }"
+        "}"
+    }
+}

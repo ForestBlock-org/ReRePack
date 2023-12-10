@@ -1,2 +1,0 @@
-global NBT = "nbt"
-global DISPLAY = "$(NBT).display"

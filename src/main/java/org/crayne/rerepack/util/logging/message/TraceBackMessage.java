@@ -18,7 +18,7 @@ public class TraceBackMessage extends AbstractLoggingMessage {
     private final PositionInformationMessage positionInformationMessage;
 
     public TraceBackMessage(@NotNull final String message, @NotNull final LoggingLevel level,
-                            @NotNull final Token at, @NotNull final String lineInCode,
+                            @NotNull final Token at, @Nullable final String lineInCode,
                             final boolean skipToEnd,
                             @NotNull final String @NotNull ... hints) {
         super(message, level);
@@ -151,9 +151,6 @@ public class TraceBackMessage extends AbstractLoggingMessage {
         public TraceBackMessage build() {
             if (at == null)
                 throw new UnsupportedOperationException("Cannot create traceback message if at-token is null");
-
-            if (lineInCode == null)
-                throw new UnsupportedOperationException("Cannot create traceback message if line in code is null");
 
             return new TraceBackMessage(message, level, at, lineInCode, skipToEnd, hints);
         }

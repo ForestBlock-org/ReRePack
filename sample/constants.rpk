@@ -1,0 +1,2 @@
+global PACK_VERSION_1_20_1 = "15"
+global ITEM_TEXTURES = "assets/item/textures"

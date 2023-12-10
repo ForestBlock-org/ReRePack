@@ -7,7 +7,6 @@ import org.crayne.rerepack.syntax.parser.except.SyntaxException;
 import org.crayne.rerepack.util.logging.Logger;
 import org.crayne.rerepack.util.logging.LoggingLevel;
 import org.crayne.rerepack.util.logging.message.PositionInformationMessage;
-import org.crayne.rerepack.util.minecraft.VanillaItem;
 import org.crayne.rerepack.workspace.except.WorkspaceException;
 import org.crayne.rerepack.workspace.pack.PackFile;
 import org.crayne.rerepack.workspace.parse.parseable.Parseable;
@@ -18,7 +17,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class WorkspaceBuilder {
 
@@ -37,12 +35,24 @@ public class WorkspaceBuilder {
     @NotNull
     private final Map<PackFile, List<String>> packContentMap;
 
-    public WorkspaceBuilder(@NotNull final Logger logger, @NotNull final ExpressionParser parser, @NotNull final File directory) {
+    public WorkspaceBuilder(@NotNull final Logger logger,
+                            @NotNull final ExpressionParser parser,
+                            @NotNull final File directory) {
         this.parser = parser;
-        this.workspace = new Workspace();
+        this.workspace = new Workspace(logger, directory);
         this.packContentMap = new HashMap<>();
         this.directory = directory;
         this.logger = logger;
+    }
+
+    @NotNull
+    public static Workspace of(@NotNull final ExpressionParser parser, @NotNull final File directory) {
+        return new WorkspaceBuilder(new Logger(), parser, directory) {{ readPackFiles(); }}.workspace();
+    }
+
+    @NotNull
+    public Workspace workspace() {
+        return workspace;
     }
 
     public void readPackFiles() {
@@ -73,14 +83,6 @@ public class WorkspaceBuilder {
             try {
                 packFile.useContainer().applyAll(packFile, workspace.templateContainer());
                 packFile.initialize(); // also handles global definitions
-                packFile.matchReplaceContainer().matchesReplacements()
-                        .forEach(matchReplaceStatement -> {
-                                matchReplaceStatement.matches().forEach(System.out::println);
-                                matchReplaceStatement.replacements().stream().map(
-                                        t -> VanillaItem.allMatching(t.key().token()).stream().map(s -> s + " = " + t.value()).collect(Collectors.joining("\n"))
-                                ).forEach(System.out::println);
-                                System.out.println("-".repeat(24));
-            });
             } catch (final WorkspaceException e) {
                 handleWorkspaceError(packFile, e);
             }

@@ -13,13 +13,13 @@ public class PositionInformationMessage extends AbstractLoggingMessage {
     @NotNull
     private final Token at;
 
-    @NotNull
+    @Nullable
     private final String lineInCode;
 
     private final boolean skipToEnd;
 
     public PositionInformationMessage(@NotNull final LoggingLevel level,
-                            @NotNull final Token at, @NotNull final String lineInCode,
+                            @NotNull final Token at, @Nullable final String lineInCode,
                             final boolean skipToEnd) {
         super("at line " + at.line() + ", " + "column " + at.column()
                 + (at.file() != null ? " in file " + at.file().getAbsolutePath() : ""), level);
@@ -103,7 +103,7 @@ public class PositionInformationMessage extends AbstractLoggingMessage {
         @NotNull
         public Builder lineInCode(@NotNull final List<String> codeLines) {
             if (at == null)
-                throw new UnsupportedOperationException("Cannot find line in code without 'at' informatio");
+                throw new UnsupportedOperationException("Cannot find line in code without 'at' information");
 
             final int line = at.line() - 1;
             if (line < 0 || line >= codeLines.size())
@@ -117,9 +117,6 @@ public class PositionInformationMessage extends AbstractLoggingMessage {
             if (at == null)
                 throw new UnsupportedOperationException("Cannot create traceback message if at-token is null");
 
-            if (lineInCode == null)
-                throw new UnsupportedOperationException("Cannot create traceback message if line in code is null");
-
             return new PositionInformationMessage(level, at, lineInCode, skipToEnd);
         }
 
@@ -128,6 +125,7 @@ public class PositionInformationMessage extends AbstractLoggingMessage {
     public void printTo(@NotNull final Logger logger) {
         logger.log(message(), level());
 
+        if (lineInCode == null) return;
         final int cursorOffset = skipToEnd ? lineInCode.length() : at.column() - 1;
         final String cursorOffsetSpace = " ".repeat(Math.max(0, cursorOffset));
 
