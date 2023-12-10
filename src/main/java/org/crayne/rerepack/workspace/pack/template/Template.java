@@ -5,6 +5,8 @@ import org.crayne.rerepack.syntax.ast.Node;
 import org.crayne.rerepack.workspace.except.DefinitionException;
 import org.crayne.rerepack.workspace.except.WorkspaceException;
 import org.crayne.rerepack.workspace.pack.PackScope;
+import org.crayne.rerepack.workspace.pack.character.CharacterContainer;
+import org.crayne.rerepack.workspace.pack.character.CharacterStatement;
 import org.crayne.rerepack.workspace.pack.definition.Definition;
 import org.crayne.rerepack.workspace.pack.definition.DefinitionContainer;
 import org.crayne.rerepack.workspace.pack.match.MatchReplaceContainer;
@@ -42,6 +44,9 @@ public class Template implements PackScope, Parseable {
     @NotNull
     private final UseContainer useContainer;
 
+    @NotNull
+    private final CharacterContainer characterContainer;
+
     public Template(@NotNull final Token identifier,
                     @NotNull final DefinitionContainer parentContainer,
                     @NotNull final Map<Token, Optional<Token>> parameters) throws DefinitionException {
@@ -51,6 +56,7 @@ public class Template implements PackScope, Parseable {
         this.matchReplaceContainer = new MatchReplaceContainer(definitionContainer);
         this.writeContainer = new WriteContainer(definitionContainer);
         this.useContainer = new UseContainer(definitionContainer);
+        this.characterContainer = new CharacterContainer(definitionContainer);
 
         declareParameters();
     }
@@ -62,6 +68,7 @@ public class Template implements PackScope, Parseable {
         this.matchReplaceContainer = new MatchReplaceContainer(definitionContainer);
         this.writeContainer = new WriteContainer(definitionContainer);
         this.useContainer = new UseContainer(definitionContainer);
+        this.characterContainer = new CharacterContainer(definitionContainer);
     }
 
     private void declareParameters() throws DefinitionException {
@@ -89,6 +96,7 @@ public class Template implements PackScope, Parseable {
 
         applyMatchStatements(usedIn, temporaryContainer);
         applyWriteStatements(usedIn, temporaryContainer);
+        applyCharacterStatements(usedIn, temporaryContainer);
         useContainer.applyAll(usedIn, templateContainer);
     }
 
@@ -155,6 +163,17 @@ public class Template implements PackScope, Parseable {
         }
     }
 
+    private void applyCharacterStatements(@NotNull final PackScope usedIn,
+                                          @NotNull final DefinitionContainer temporaryContainer) throws DefinitionException {
+        for (final CharacterStatement characterStatement : characterContainer().characterStatements()) {
+            final CharacterStatement finalizedStatement = new CharacterStatement(temporaryContainer,
+                    characterStatement.characters(), characterStatement.bitmapFilePath(),
+                    characterStatement.definitionContainer());
+
+            usedIn.characterContainer().addCharacterStatement(finalizedStatement);
+        }
+    }
+
     @NotNull
     public Optional<Token> identifier() {
         return Optional.ofNullable(identifier);
@@ -163,6 +182,11 @@ public class Template implements PackScope, Parseable {
     @NotNull
     public DefinitionContainer definitionContainer() {
         return definitionContainer;
+    }
+
+    @NotNull
+    public CharacterContainer characterContainer() {
+        return characterContainer;
     }
 
     @NotNull
@@ -200,6 +224,7 @@ public class Template implements PackScope, Parseable {
         definitionContainer().parseFromAST(templateScope, packScope);
         matchReplaceContainer().parseFromAST(templateScope, packScope);
         writeContainer().parseFromAST(templateScope, packScope);
+        characterContainer().parseFromAST(templateScope, packScope);
     }
 
     private void parseDefaultTemplateParameters(@NotNull final Node templateParameters,

@@ -47,8 +47,8 @@ public class Workspace {
     }
 
     @NotNull
-    public PackFile createPackage(@NotNull final String name) {
-        final PackFile packFile = new PackFile(name, this, globalDefinitionContainer);
+    public PackFile createPackage(@NotNull final String name, @NotNull final File file) {
+        final PackFile packFile = new PackFile(name, file, this, globalDefinitionContainer);
         packFiles.add(packFile);
         return packFile;
     }

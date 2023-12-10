@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public abstract class OptifineResource {
+public abstract class OptifineResource implements Resource {
 
     @NotNull
     private final Map<String, String> valueMap;
@@ -21,7 +21,7 @@ public abstract class OptifineResource {
     }
 
     @NotNull
-    public String toString() {
+    public String encode() {
         return valueMap.entrySet()
                 .stream()
                 .map(e -> e.getKey() + "=" + e.getValue())

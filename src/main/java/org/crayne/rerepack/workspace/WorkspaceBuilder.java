@@ -33,7 +33,7 @@ public class WorkspaceBuilder {
     private final File directory;
 
     @NotNull
-    private final Map<PackFile, List<String>> packContentMap;
+    private final Map<File, List<String>> packContentMap;
 
     public WorkspaceBuilder(@NotNull final Logger logger,
                             @NotNull final ExpressionParser parser,
@@ -78,6 +78,7 @@ public class WorkspaceBuilder {
         parseAllFromAST(packNodeMap, PackFile::matchReplaceContainer);
         parseAllFromAST(packNodeMap, PackFile::writeContainer);
         parseAllFromAST(packNodeMap, PackFile::useContainer);
+        parseAllFromAST(packNodeMap, PackFile::characterContainer);
 
         forEachPackFile(packNodeMap, (packFile, node) -> {
             try {
@@ -123,9 +124,10 @@ public class WorkspaceBuilder {
 
     private void handleWorkspaceError(@NotNull final PackFile pack, @NotNull final WorkspaceException e) {
         logger.log(e.getMessage(), LoggingLevel.WORKSPACE_ERROR);
+
         e.traceBackTokens().forEach(t -> logger.log(PositionInformationMessage.Builder
                 .createBuilder(LoggingLevel.HELP)
-                .positionInformation(t, packContentMap.get(pack))
+                .positionInformation(t, packContentMap.get(t.file()))
                 .build()));
     }
 
@@ -136,7 +138,7 @@ public class WorkspaceBuilder {
 
     private void parsePackFile(@NotNull final String name, @NotNull final File file,
                                @NotNull final Map<PackFile, Node> packNodeMap) throws IOException, WorkspaceException {
-        final PackFile pack = workspace.createPackage(name);
+        final PackFile pack = workspace.createPackage(name, file);
         try {
             final List<String> content = new ArrayList<>();
 
@@ -144,7 +146,7 @@ public class WorkspaceBuilder {
                     .orElseThrow(() -> new WorkspaceException("Could not parse pack file '" + name + "'"));
 
             packNodeMap.put(pack, packAST);
-            packContentMap.put(pack, content);
+            packContentMap.put(file, content);
         } catch (final WorkspaceException e) {
             handleWorkspaceError(pack, e);
             throw new WorkspaceException(e);

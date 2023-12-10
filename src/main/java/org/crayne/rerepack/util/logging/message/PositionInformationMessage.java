@@ -95,15 +95,18 @@ public class PositionInformationMessage extends AbstractLoggingMessage {
         }
 
         @NotNull
-        public Builder positionInformation(@NotNull final Token at, @NotNull final List<String> codeLines) {
+        public Builder positionInformation(@NotNull final Token at, @Nullable final List<String> codeLines) {
             this.at = at;
             return lineInCode(codeLines);
         }
 
         @NotNull
-        public Builder lineInCode(@NotNull final List<String> codeLines) {
+        public Builder lineInCode(@Nullable final List<String> codeLines) {
             if (at == null)
                 throw new UnsupportedOperationException("Cannot find line in code without 'at' information");
+
+            if (codeLines == null)
+                return this;
 
             final int line = at.line() - 1;
             if (line < 0 || line >= codeLines.size())

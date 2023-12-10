@@ -22,6 +22,10 @@ public class DefinitionContainer extends MapContainer<Definition> implements Par
         super(parent);
     }
 
+    public DefinitionContainer(@NotNull final DefinitionContainer parent, @NotNull final DefinitionContainer copyAll) throws DefinitionException {
+        super(parent, copyAll);
+    }
+
     @NotNull
     public Definition addDefinition(@NotNull final Token identifier, @NotNull final Definition definition) throws DefinitionException {
         return super.addDefinition(identifier, new Definition(definition.fullDefinition().createCopy()));

@@ -30,7 +30,9 @@ public class RePackLexerSpecification extends LexerSpecification {
             "replace",
             "items",
 
-            "write"
+            "write",
+
+            "char"
     );
 
     @NotNull

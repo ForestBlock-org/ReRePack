@@ -28,6 +28,12 @@ public class MapContainer<T> {
         this.parent = parent;
     }
 
+    public MapContainer(@NotNull final MapContainer<T> parent, @NotNull final MapContainer<T> copyAll) throws DefinitionException {
+        this.definitions = new LinkedHashMap<>();
+        this.parent = parent;
+        defineAll(copyAll);
+    }
+
     @NotNull
     public Map<Token, T> definitions() {
         return Collections.unmodifiableMap(definitions);
@@ -98,6 +104,11 @@ public class MapContainer<T> {
     public T definition(@NotNull final Token identifier) throws DefinitionException {
         return findDefinition(identifier).orElseThrow(() ->
                 new DefinitionException(cannotFindDefinitionString() + " '" + identifier + "'", identifier));
+    }
+
+    public void defineAll(@NotNull final MapContainer<T> other) throws DefinitionException {
+        for (final Map.Entry<Token, T> entry : other.definitions.entrySet())
+            addDefinition(entry.getKey(), entry.getValue());
     }
 
     @NotNull

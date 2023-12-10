@@ -1,0 +1,8 @@
+template create_tag(require unicode, require texture) {
+    def TAGS_DIRECTORY = "assets/tags/textures"
+
+    char "$(unicode)" "$(TAGS_DIRECTORY)/$(texture).png" {
+        "ascent" = "7"
+        "height" = "8"
+    }
+}

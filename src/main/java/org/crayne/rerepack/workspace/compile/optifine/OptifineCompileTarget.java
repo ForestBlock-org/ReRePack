@@ -8,13 +8,22 @@ import org.crayne.rerepack.util.logging.message.TraceBackMessage;
 import org.crayne.rerepack.util.minecraft.VanillaItem;
 import org.crayne.rerepack.workspace.Workspace;
 import org.crayne.rerepack.workspace.compile.CompileTarget;
-import org.crayne.rerepack.workspace.compile.optifine.resource.CITResource;
+import org.crayne.rerepack.workspace.compile.optifine.resource.Resource;
+import org.crayne.rerepack.workspace.compile.optifine.resource.cit.CITResource;
+import org.crayne.rerepack.workspace.compile.optifine.resource.font.FontResource;
+import org.crayne.rerepack.workspace.compile.optifine.resource.font.space.SpaceFontLangResource;
+import org.crayne.rerepack.workspace.compile.optifine.resource.font.space.SpaceFontResource;
 import org.crayne.rerepack.workspace.pack.PackFile;
+import org.crayne.rerepack.workspace.pack.character.CharacterContainer;
+import org.crayne.rerepack.workspace.pack.character.CharacterStatement;
 import org.crayne.rerepack.workspace.pack.match.MatchReplaceContainer;
 import org.crayne.rerepack.workspace.pack.write.WriteContainer;
 import org.crayne.rerepack.workspace.pack.write.WriteStatement;
 import org.jetbrains.annotations.NotNull;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -39,6 +48,14 @@ public class OptifineCompileTarget implements CompileTarget {
         if (deleteOldOutput(workspace)) return;
         compileAllMatchReplacements(workspace);
         compileAllFileWrites(workspace);
+        compileAllCharacterReplacements(workspace);
+        compileSpaceFont(workspace);
+    }
+
+    private static void createParentDirectories(@NotNull final File file) throws IOException {
+        final File parentDirectory = file.getParentFile();
+        if (!parentDirectory.isDirectory() && !parentDirectory.mkdirs())
+            throw new IOException("Could not create parent directory of " + file.getPath());
     }
 
     public boolean deleteOldOutput(@NotNull final Workspace workspace) {
@@ -110,6 +127,113 @@ public class OptifineCompileTarget implements CompileTarget {
         }
     }
 
+    public void compileAllCharacterReplacements(@NotNull final Workspace workspace) {
+        final FontResource fontResource = new FontResource();
+
+        workspace.packFiles()
+                .stream()
+                .map(PackFile::characterContainer)
+                .map(CharacterContainer::characterStatements)
+                .flatMap(Collection::stream)
+                .forEach(c -> compileCharacterStatement(workspace, c, fontResource));
+
+        fontResource.addSpaceFontCharacters();
+
+        try {
+            final File defaultJson = new File(outputDirectory, FontResource.DEFAULT_FONT_JSON);
+            createParentDirectories(defaultJson);
+
+            Files.writeString(defaultJson.toPath(), fontResource.encode(), StandardCharsets.UTF_8);
+        } catch (final IOException e) {
+            workspace.logger().log("Could not create default.json file: " + e.getMessage(),
+                    LoggingLevel.PACKING_ERROR);
+            e.printStackTrace();
+        }
+    }
+
+    public void compileSpaceFont(@NotNull final Workspace workspace) {
+        compileSpaceFontDefaultJson(workspace);
+        compileSpaceFontLangJson(workspace);
+        compileSpaceFontSplitter(workspace);
+    }
+
+    public void compileSpaceFontSplitter(@NotNull final Workspace workspace) {
+        final BufferedImage splitterImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
+        drawInvisibleCorner(splitterImage, 255, 255);
+
+        try {
+            final File splitterImageFile = new File(outputDirectory, SpaceFontResource.SPACE_FONT_SPLITTER);
+            createParentDirectories(splitterImageFile);
+
+            ImageIO.write(splitterImage, "png", splitterImageFile);
+        } catch (final IOException e) {
+            workspace.logger().log("Could not create space font splitter.png texture file: "
+                            + e.getMessage(), LoggingLevel.PACKING_ERROR);
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private static void drawInvisibleCorner(@NotNull final BufferedImage bufferedImage, final int x, final int y) {
+        if (bufferedImage.getRGB(x, y) == 0)
+            bufferedImage.setRGB(x, y, new Color(0, 0, 0, 1).getRGB());
+    }
+
+    public void compileSpaceFontLangJson(@NotNull final Workspace workspace) {
+        try {
+            final SpaceFontLangResource spaceFontLangResource = new SpaceFontLangResource();
+            spaceFontLangResource.addAllSpaces();
+
+            final File langJson = new File(outputDirectory, SpaceFontLangResource.LANG_JSON_FILE);
+            createParentDirectories(langJson);
+
+            Files.writeString(langJson.toPath(), spaceFontLangResource.encode(), StandardCharsets.UTF_8);
+        } catch (final IOException e) {
+            workspace.logger().log("Could not create space font en_us.json file: " + e.getMessage(),
+                    LoggingLevel.PACKING_ERROR);
+            e.printStackTrace();
+        }
+    }
+
+    public void compileSpaceFontDefaultJson(@NotNull final Workspace workspace) {
+        try {
+            final SpaceFontResource spaceFontResource = new SpaceFontResource();
+            spaceFontResource.addSpaceFontCharacters();
+
+            final File defaultJson = new File(outputDirectory, SpaceFontResource.SPACE_DEFAULT_FONT_JSON);
+            createParentDirectories(defaultJson);
+
+            Files.writeString(defaultJson.toPath(), spaceFontResource.encode(), StandardCharsets.UTF_8);
+        } catch (final IOException e) {
+            workspace.logger().log("Could not create space font default.json file: " + e.getMessage(),
+                    LoggingLevel.PACKING_ERROR);
+            e.printStackTrace();
+        }
+    }
+
+    public void compileCharacterStatement(@NotNull final Workspace workspace,
+                                          @NotNull final CharacterStatement characterStatement,
+                                          @NotNull final FontResource fontResource) {
+        fontResource.addCharacterElement(characterStatement);
+
+        final Token filepath = characterStatement.bitmapFilePath();
+        final File copyTo = new File(outputDirectory, "assets/minecraft/textures/"
+                + Resource.fileNameOfPath(filepath.token()));
+
+        final File copyFrom = new File(workspace.directory(), filepath.token());
+
+        try {
+            createParentDirectories(copyTo);
+            Files.copy(copyFrom.toPath(), copyTo.toPath());
+        } catch (final IOException e) {
+            workspace.logger().log(TraceBackMessage.Builder
+                    .createBuilder("Could not copy file '" + filepath + "' to output: "
+                            + e.getMessage(), LoggingLevel.PACKING_ERROR)
+                    .at(filepath)
+                    .build());
+        }
+    }
+
     public void compileMatchReplace(@NotNull final MatchReplaceContainer matchReplaceContainer,
                                     @NotNull final Map<CITResource, Set<Token>> citResourceSetMap) {
         matchReplaceContainer.matchesReplacements().forEach(matchReplaceStatement -> matchReplaceStatement
@@ -151,7 +275,7 @@ public class OptifineCompileTarget implements CompileTarget {
 
                 final File propertiesFile = new File(outputDirectory, propertiesFileName);
 
-                Files.writeString(propertiesFile.toPath(), r.toString(), StandardCharsets.UTF_8);
+                Files.writeString(propertiesFile.toPath(), r.encode(), StandardCharsets.UTF_8);
             } catch (final IOException e) {
                 workspace.logger().log("Could not create properties file for" +
                         " cit with texture " + r.textureName() + ": " + e.getMessage(), LoggingLevel.PACKING_ERROR);
