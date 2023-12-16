@@ -135,7 +135,8 @@ public class RePackParserSpecification {
                         .rule(DEFINITION_STATEMENT, definitionStatement)
                         .rule(MATCH_STATEMENT, matchPrefix, matchScope, replacePrefix, replaceScope)
                         .rule(WRITE_STATEMENT, writePrefix, writeScope)
-                        .rule(CHAR_STATEMENT, charStatementPrefix, charScope),
+                        .rule(CHAR_STATEMENT, charStatementPrefix, charScope)
+                        .rule(USE_STATEMENT, useStatement, useParamScope),
 
                 parentScope = parent()
                         .rule(DEFINITION_STATEMENT, definitionStatement)

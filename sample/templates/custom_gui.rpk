@@ -1,0 +1,31 @@
+template create_gui(require _unicode, require _texture, require base_ascent) {
+    def GUI_DIRECTORY = "assets/gui/textures"
+
+    char "$(_unicode)" "$(GUI_DIRECTORY)/$(_texture).png" {
+        "ascent" = "$(base_ascent)"
+    }
+}
+
+template create_gui_1(require unicode, require texture) {
+    create_gui(_unicode = "$(unicode)", _texture = "$(texture)", base_ascent = "84")
+}
+
+template create_gui_2(require unicode, require texture) {
+    create_gui(_unicode = "$(unicode)", _texture = "$(texture)", base_ascent = "75")
+}
+
+template create_gui_3(require unicode, require texture) {
+    create_gui(_unicode = "$(unicode)", _texture = "$(texture)", base_ascent = "66")
+}
+
+template create_gui_4(require unicode, require texture) {
+    create_gui(_unicode = "$(unicode)", _texture = "$(texture)", base_ascent = "57")
+}
+
+template create_gui_5(require unicode, require texture) {
+    create_gui(_unicode = "$(unicode)", _texture = "$(texture)", base_ascent = "48")
+}
+
+template create_gui_6(require unicode, require texture) {
+    create_gui(_unicode = "$(unicode)", _texture = "$(texture)", base_ascent = "39")
+}

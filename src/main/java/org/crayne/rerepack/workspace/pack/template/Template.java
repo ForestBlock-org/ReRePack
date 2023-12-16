@@ -55,7 +55,7 @@ public class Template implements PackScope, Parseable {
         this.definitionContainer = new DefinitionContainer(parentContainer);
         this.matchReplaceContainer = new MatchReplaceContainer(definitionContainer);
         this.writeContainer = new WriteContainer(definitionContainer);
-        this.useContainer = new UseContainer(definitionContainer);
+        this.useContainer = new UseContainer();
         this.characterContainer = new CharacterContainer(definitionContainer);
 
         declareParameters();
@@ -67,7 +67,7 @@ public class Template implements PackScope, Parseable {
         this.definitionContainer = new DefinitionContainer(parentContainer);
         this.matchReplaceContainer = new MatchReplaceContainer(definitionContainer);
         this.writeContainer = new WriteContainer(definitionContainer);
-        this.useContainer = new UseContainer(definitionContainer);
+        this.useContainer = new UseContainer();
         this.characterContainer = new CharacterContainer(definitionContainer);
     }
 
@@ -88,6 +88,13 @@ public class Template implements PackScope, Parseable {
     }
 
     public void applyTemplate(@NotNull final PackScope usedIn,
+                              @NotNull final UseStatement useStatement,
+                              @NotNull final TemplateContainer templateContainer,
+                              @NotNull final DefinitionContainer temporaryContainer) throws WorkspaceException {
+        applyTemplate(usedIn, useStatement.givenParameters(), useStatement.identifier(), templateContainer, temporaryContainer);
+    }
+
+    public void applyTemplate(@NotNull final PackScope usedIn,
                               @NotNull final DefinitionContainer givenParameters,
                               @NotNull final Token calledAt,
                               @NotNull final TemplateContainer templateContainer) throws WorkspaceException {
@@ -97,7 +104,20 @@ public class Template implements PackScope, Parseable {
         applyMatchStatements(usedIn, temporaryContainer);
         applyWriteStatements(usedIn, temporaryContainer);
         applyCharacterStatements(usedIn, temporaryContainer);
-        useContainer.applyAll(usedIn, templateContainer);
+        useContainer.applyAll(usedIn, templateContainer, temporaryContainer);
+    }
+
+    public void applyTemplate(@NotNull final PackScope usedIn,
+                              @NotNull final DefinitionContainer givenParameters,
+                              @NotNull final Token calledAt,
+                              @NotNull final TemplateContainer templateContainer,
+                              @NotNull final DefinitionContainer temporaryContainer) throws WorkspaceException {
+        putAllParameters(temporaryContainer, givenParameters, calledAt);
+
+        applyMatchStatements(usedIn, temporaryContainer);
+        applyWriteStatements(usedIn, temporaryContainer);
+        applyCharacterStatements(usedIn, temporaryContainer);
+        useContainer.applyAll(usedIn, templateContainer, temporaryContainer);
     }
 
     private void handleMissingParameter(@NotNull final Token ident,
@@ -105,9 +125,9 @@ public class Template implements PackScope, Parseable {
                                         @NotNull final DefinitionContainer givenParameters) throws DefinitionException {
         if (givenParameters.definitions().containsKey(ident)) return;
 
-        final Optional<Token> defaultParamter = parameters.get(ident);
-        if (defaultParamter.isPresent()) {
-            givenParameters.createDefinition(ident, defaultParamter.get());
+        final Optional<Token> defaultParameter = parameters.get(ident);
+        if (defaultParameter.isPresent()) {
+            givenParameters.createDefinition(ident, defaultParameter.get());
             return;
         }
 
@@ -167,9 +187,9 @@ public class Template implements PackScope, Parseable {
                                           @NotNull final DefinitionContainer temporaryContainer) throws DefinitionException {
         for (final CharacterStatement characterStatement : characterContainer().characterStatements()) {
             final CharacterStatement finalizedStatement = new CharacterStatement(temporaryContainer,
-                    characterStatement.characters(), characterStatement.bitmapFilePath(),
-                    characterStatement.definitionContainer());
+                    characterStatement.characters(), characterStatement.bitmapFilePath());
 
+            finalizedStatement.definitionContainer().defineAll(characterStatement.definitionContainer());
             usedIn.characterContainer().addCharacterStatement(finalizedStatement);
         }
     }
@@ -225,6 +245,7 @@ public class Template implements PackScope, Parseable {
         matchReplaceContainer().parseFromAST(templateScope, packScope);
         writeContainer().parseFromAST(templateScope, packScope);
         characterContainer().parseFromAST(templateScope, packScope);
+        useContainer().parseFromAST(templateScope, packScope);
     }
 
     private void parseDefaultTemplateParameters(@NotNull final Node templateParameters,

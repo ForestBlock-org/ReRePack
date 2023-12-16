@@ -32,6 +32,13 @@ public class UseStatement implements Parseable, Initializable {
     }
 
     public void applyTo(@NotNull final PackScope packScope,
+                        @NotNull final TemplateContainer templateContainer,
+                        @NotNull final DefinitionContainer temporaryContainer) throws WorkspaceException {
+        final Template template = templateContainer.definition(identifier);
+        template.applyTemplate(packScope, this, templateContainer, temporaryContainer);
+    }
+
+    public void applyTo(@NotNull final PackScope packScope,
                         @NotNull final TemplateContainer templateContainer) throws WorkspaceException {
         final Template template = templateContainer.definition(identifier);
         template.applyTemplate(packScope, this, templateContainer);

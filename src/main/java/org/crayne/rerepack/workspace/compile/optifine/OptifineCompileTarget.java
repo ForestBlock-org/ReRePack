@@ -1,18 +1,17 @@
 package org.crayne.rerepack.workspace.compile.optifine;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.crayne.rerepack.syntax.Token;
 import org.crayne.rerepack.util.logging.LoggingLevel;
 import org.crayne.rerepack.util.logging.message.TraceBackMessage;
 import org.crayne.rerepack.util.minecraft.VanillaItem;
 import org.crayne.rerepack.workspace.Workspace;
 import org.crayne.rerepack.workspace.compile.CompileTarget;
-import org.crayne.rerepack.workspace.compile.optifine.resource.Resource;
 import org.crayne.rerepack.workspace.compile.optifine.resource.cit.CITResource;
 import org.crayne.rerepack.workspace.compile.optifine.resource.font.FontResource;
 import org.crayne.rerepack.workspace.compile.optifine.resource.font.space.SpaceFontLangResource;
 import org.crayne.rerepack.workspace.compile.optifine.resource.font.space.SpaceFontResource;
+import org.crayne.rerepack.workspace.compile.optifine.util.ImageSplit;
 import org.crayne.rerepack.workspace.pack.PackFile;
 import org.crayne.rerepack.workspace.pack.character.CharacterContainer;
 import org.crayne.rerepack.workspace.pack.character.CharacterStatement;
@@ -22,13 +21,15 @@ import org.crayne.rerepack.workspace.pack.write.WriteStatement;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
+
+import static org.crayne.rerepack.workspace.compile.optifine.resource.Resource.fileNameOfPath;
+import static org.crayne.rerepack.workspace.compile.optifine.resource.Resource.withDifferentFileExtension;
 
 public class OptifineCompileTarget implements CompileTarget {
 
@@ -159,7 +160,7 @@ public class OptifineCompileTarget implements CompileTarget {
 
     public void compileSpaceFontSplitter(@NotNull final Workspace workspace) {
         final BufferedImage splitterImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
-        drawInvisibleCorner(splitterImage, 255, 255);
+        ImageSplit.drawInvisibleCorner(splitterImage, 255, 255);
 
         try {
             final File splitterImageFile = new File(outputDirectory, SpaceFontResource.SPACE_FONT_SPLITTER);
@@ -171,12 +172,6 @@ public class OptifineCompileTarget implements CompileTarget {
                             + e.getMessage(), LoggingLevel.PACKING_ERROR);
             e.printStackTrace();
         }
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private static void drawInvisibleCorner(@NotNull final BufferedImage bufferedImage, final int x, final int y) {
-        if (bufferedImage.getRGB(x, y) == 0)
-            bufferedImage.setRGB(x, y, new Color(0, 0, 0, 1).getRGB());
     }
 
     public void compileSpaceFontLangJson(@NotNull final Workspace workspace) {
@@ -214,17 +209,42 @@ public class OptifineCompileTarget implements CompileTarget {
     public void compileCharacterStatement(@NotNull final Workspace workspace,
                                           @NotNull final CharacterStatement characterStatement,
                                           @NotNull final FontResource fontResource) {
-        fontResource.addCharacterElement(characterStatement);
-
         final Token filepath = characterStatement.bitmapFilePath();
-        final File copyTo = new File(outputDirectory, "assets/minecraft/textures/"
-                + Resource.fileNameOfPath(filepath.token()));
 
         final File copyFrom = new File(workspace.directory(), filepath.token());
+        final BufferedImage originalImage;
 
         try {
-            createParentDirectories(copyTo);
-            Files.copy(copyFrom.toPath(), copyTo.toPath());
+            originalImage = ImageIO.read(copyFrom);
+        } catch (final IOException e) {
+            workspace.logger().log(TraceBackMessage.Builder
+                    .createBuilder("Could not read texture file '" + filepath + "' as an image: "
+                            + e.getMessage(), LoggingLevel.PACKING_ERROR)
+                    .at(filepath)
+                    .build());
+            return;
+        }
+        final double resolution = characterStatement.resolution();
+        final int scaledSplitSize = (int) (256 / resolution);
+        final List<ImageSplit> splitTextures = ImageSplit.splitImage(originalImage, 256, resolution);
+
+        try {
+            for (final ImageSplit imageSplit : splitTextures) {
+                final String suffix = splitTextures.size() == 1
+                        ? ".png"
+                        : "_" + imageSplit.row() + "_" + imageSplit.column() + ".png";
+
+                final String splitFilePath = withDifferentFileExtension(fileNameOfPath(filepath.token()), suffix);
+
+                final File destinationImage = new File(outputDirectory,
+                        "assets/minecraft/textures/" + splitFilePath);
+
+                createParentDirectories(destinationImage);
+                ImageIO.write(imageSplit.splitImage(), "png", destinationImage);
+
+                fontResource.addCharacterElement(characterStatement.createSplit(imageSplit,
+                        splitFilePath, originalImage.getHeight(), scaledSplitSize));
+            }
         } catch (final IOException e) {
             workspace.logger().log(TraceBackMessage.Builder
                     .createBuilder("Could not copy file '" + filepath + "' to output: "
@@ -270,9 +290,8 @@ public class OptifineCompileTarget implements CompileTarget {
         citResourceSetMap.keySet().forEach(r -> {
             compileFileCopy(workspace, r.texturePath(), r.citFilePath());
             try {
-                final String propertiesFileName = StringUtils.substringBefore(r.citFilePath(),
-                        ".") + ".properties";
-
+                final String propertiesFileName = withDifferentFileExtension(r.citFilePath(),
+                        ".properties");
                 final File propertiesFile = new File(outputDirectory, propertiesFileName);
 
                 Files.writeString(propertiesFile.toPath(), r.encode(), StandardCharsets.UTF_8);

@@ -15,4 +15,9 @@ public interface Resource {
                 : filepath;
     }
 
+    @NotNull
+    static String withDifferentFileExtension(@NotNull final String filepath, @NotNull final String extension) {
+        return StringUtils.substringBefore(filepath, ".") + extension;
+    }
+
 }

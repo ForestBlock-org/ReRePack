@@ -29,8 +29,26 @@ public class UseContainer implements Parseable, Initializable {
         this.useStatements = new HashSet<>();
     }
 
+    public UseContainer() {
+        this.definitionContainer = new DefinitionContainer();
+        this.useStatements = new HashSet<>();
+    }
+
+    @NotNull
+    public DefinitionContainer definitionContainer() {
+        return definitionContainer;
+    }
+
     public void initialize() throws WorkspaceException {
         for (final UseStatement useStatement : useStatements) useStatement.initialize();
+    }
+
+    public void applyAll(@NotNull final PackScope packScope,
+                         @NotNull final TemplateContainer templateContainer,
+                         @NotNull final DefinitionContainer temporaryContainer) throws WorkspaceException {
+
+        for (final UseStatement useStatement : useStatements)
+            useStatement.applyTo(packScope, templateContainer, temporaryContainer);
     }
 
     public void applyAll(@NotNull final PackScope packScope,
@@ -52,7 +70,7 @@ public class UseContainer implements Parseable, Initializable {
 
     @NotNull
     public UseStatement createUseStatement(@NotNull final Token identifier,
-                                   @NotNull final DefinitionContainer parameters) {
+                                           @NotNull final DefinitionContainer parameters) {
         final UseStatement useStatement = new UseStatement(identifier, parameters);
         addUseStatement(useStatement);
         return useStatement;

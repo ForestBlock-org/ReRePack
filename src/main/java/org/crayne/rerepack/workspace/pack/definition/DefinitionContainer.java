@@ -18,12 +18,8 @@ public class DefinitionContainer extends MapContainer<Definition> implements Par
         super();
     }
 
-    public DefinitionContainer(@NotNull final DefinitionContainer parent) {
+    public DefinitionContainer(@NotNull final MapContainer<Definition> parent) {
         super(parent);
-    }
-
-    public DefinitionContainer(@NotNull final DefinitionContainer parent, @NotNull final DefinitionContainer copyAll) throws DefinitionException {
-        super(parent, copyAll);
     }
 
     @NotNull

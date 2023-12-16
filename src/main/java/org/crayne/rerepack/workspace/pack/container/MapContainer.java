@@ -16,7 +16,7 @@ public class MapContainer<T> {
     private final Map<Token, T> definitions;
 
     @Nullable
-    private final MapContainer<T> parent;
+    private MapContainer<T> parent;
 
     public MapContainer() {
         this.definitions = new LinkedHashMap<>();
@@ -26,12 +26,6 @@ public class MapContainer<T> {
     public MapContainer(@NotNull final MapContainer<T> parent) {
         this.definitions = new LinkedHashMap<>();
         this.parent = parent;
-    }
-
-    public MapContainer(@NotNull final MapContainer<T> parent, @NotNull final MapContainer<T> copyAll) throws DefinitionException {
-        this.definitions = new LinkedHashMap<>();
-        this.parent = parent;
-        defineAll(copyAll);
     }
 
     @NotNull
@@ -73,6 +67,10 @@ public class MapContainer<T> {
     @NotNull
     public Optional<MapContainer<T>> parent() {
         return Optional.ofNullable(parent);
+    }
+
+    public void parent(@Nullable final MapContainer<T> parent) {
+        this.parent = parent;
     }
 
     @NotNull
