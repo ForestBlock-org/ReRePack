@@ -135,7 +135,9 @@ public class OptifineCompileTarget implements CompileTarget {
                     .build());
 
         try {
-            Files.write(new File(outputDirectory, destinationPath).toPath(), writeStatement.lines()
+            final File file = new File(outputDirectory, destinationPath);
+            createParentDirectories(file);
+            Files.write(file.toPath(), writeStatement.lines()
                     .stream()
                     .map(Token::token)
                     .toList());
