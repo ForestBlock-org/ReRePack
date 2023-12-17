@@ -9,25 +9,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fa8e8d78-b363-4df8-82ca-a951938c61c4" name="Changes" comment="split texture support -&gt; guis can now be added easily">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/minecraft/LanguageFiles.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/resource/lang/LangResource.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/lang/LangContainer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/lang/LangStatement.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample/templates/custom_gui.rpk" beforeDir="false" afterPath="$PROJECT_DIR$/sample/templates/custom_gui.rpk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/minecraft/VanillaItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/minecraft/VanillaItems.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/string/StringUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/string/StringUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/Workspace.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/Workspace.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/WorkspaceBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/WorkspaceBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/OptifineCompileTarget.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/OptifineCompileTarget.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/resource/font/space/SpaceFontLangResource.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/resource/lang/SpaceFontLangResource.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/resource/font/space/SpaceFontResource.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/resource/font/SpaceFontResource.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/match/MatchReplaceStatement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/match/MatchReplaceStatement.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/parse/RePackLexerSpecification.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/parse/RePackLexerSpecification.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/parse/RePackParserSpecification.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/parse/RePackParserSpecification.java" afterDir="false" />
-    </list>
+    <list default="true" id="fa8e8d78-b363-4df8-82ca-a951938c61c4" name="Changes" comment="added custom language file support" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -213,7 +195,14 @@
       <option name="project" value="LOCAL" />
       <updated>1702763751298</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="added custom language file support">
+      <created>1702771837494</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1702771837494</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -236,6 +225,7 @@
     <MESSAGE value="cit file creation finished" />
     <MESSAGE value="font file creation finished as well as recreation of space font natively" />
     <MESSAGE value="split texture support -&gt; guis can now be added easily" />
-    <option name="LAST_COMMIT_MESSAGE" value="split texture support -&gt; guis can now be added easily" />
+    <MESSAGE value="added custom language file support" />
+    <option name="LAST_COMMIT_MESSAGE" value="added custom language file support" />
   </component>
 </project>

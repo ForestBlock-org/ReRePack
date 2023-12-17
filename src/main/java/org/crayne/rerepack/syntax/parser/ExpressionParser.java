@@ -57,6 +57,11 @@ public class ExpressionParser {
     }
 
     @NotNull
+    public Logger logger() {
+        return logger;
+    }
+
+    @NotNull
     public Optional<Node> parse(@NotNull final File file, @Nullable final List<String> addContent) throws IOException {
         return parse(file, Files.readString(file.toPath()), addContent);
     }

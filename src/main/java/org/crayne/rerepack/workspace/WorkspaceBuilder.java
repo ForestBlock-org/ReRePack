@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -46,8 +47,12 @@ public class WorkspaceBuilder {
     }
 
     @NotNull
-    public static Workspace of(@NotNull final ExpressionParser parser, @NotNull final File directory) {
-        return new WorkspaceBuilder(new Logger(), parser, directory) {{ readPackFiles(); }}.workspace();
+    public static Optional<Workspace> of(@NotNull final ExpressionParser parser, @NotNull final File directory) {
+        final WorkspaceBuilder builder = new WorkspaceBuilder(new Logger(), parser, directory);
+        final boolean success = builder.readPackFiles();
+
+        if (success) return Optional.of(builder.workspace);
+        return Optional.empty();
     }
 
     @NotNull
@@ -55,7 +60,7 @@ public class WorkspaceBuilder {
         return workspace;
     }
 
-    public void readPackFiles() {
+    public boolean readPackFiles() {
         final Map<PackFile, Node> packNodeMap = new HashMap<>();
         final Iterator<File> packFileIterator = FileUtils.iterateFiles(directory,
                 new String[] {"rpk"}, true);
@@ -67,10 +72,10 @@ public class WorkspaceBuilder {
             }
         } catch (final IOException | SyntaxException e) {
             logger.log(e.getMessage(), LoggingLevel.PARSING_ERROR);
-            return;
+            return false;
         } catch (final WorkspaceException e) {
             logger.log(e.getMessage(), LoggingLevel.WORKSPACE_ERROR);
-            return;
+            return false;
         }
         parseAllFromAST(packNodeMap, workspace.globalDefinitionContainer());
         parseAllFromAST(packNodeMap, workspace.templateContainer());
@@ -81,14 +86,17 @@ public class WorkspaceBuilder {
         parseAllFromAST(packNodeMap, PackFile::useContainer);
         parseAllFromAST(packNodeMap, PackFile::characterContainer);
 
+        final AtomicBoolean success = new AtomicBoolean(true);
         forEachPackFile(packNodeMap, (packFile, node) -> {
             try {
                 packFile.useContainer().applyAll(packFile, workspace.templateContainer());
                 packFile.initialize(); // also handles global definitions
             } catch (final WorkspaceException e) {
                 handleWorkspaceError(packFile, e);
+                success.set(false);
             }
         });
+        return success.get();
     }
 
     private void parseAllFromAST(@NotNull final Map<PackFile, Node> packFileNodeMap,
