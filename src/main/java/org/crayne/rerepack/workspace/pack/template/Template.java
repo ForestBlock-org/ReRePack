@@ -10,6 +10,8 @@ import org.crayne.rerepack.workspace.pack.character.CharacterContainer;
 import org.crayne.rerepack.workspace.pack.character.CharacterStatement;
 import org.crayne.rerepack.workspace.pack.definition.Definition;
 import org.crayne.rerepack.workspace.pack.definition.DefinitionContainer;
+import org.crayne.rerepack.workspace.pack.lang.LangContainer;
+import org.crayne.rerepack.workspace.pack.lang.LangStatement;
 import org.crayne.rerepack.workspace.pack.match.MatchReplaceContainer;
 import org.crayne.rerepack.workspace.pack.match.MatchReplaceStatement;
 import org.crayne.rerepack.workspace.pack.template.use.UseContainer;
@@ -47,7 +49,13 @@ public class Template implements PackScope, Parseable {
     private final UseContainer useContainer;
 
     @NotNull
+    private final LangContainer langContainer;
+
+    @NotNull
     private final CharacterContainer characterContainer;
+
+    @NotNull
+    private final Workspace workspace;
 
     public Template(@NotNull final Token identifier,
                     @NotNull final DefinitionContainer parentContainer,
@@ -58,8 +66,10 @@ public class Template implements PackScope, Parseable {
         this.definitionContainer = new DefinitionContainer(parentContainer);
         this.matchReplaceContainer = new MatchReplaceContainer(definitionContainer);
         this.writeContainer = new WriteContainer(definitionContainer, workspace);
+        this.langContainer = new LangContainer(definitionContainer);
         this.useContainer = new UseContainer();
         this.characterContainer = new CharacterContainer(definitionContainer);
+        this.workspace = workspace;
 
         declareParameters();
     }
@@ -70,8 +80,15 @@ public class Template implements PackScope, Parseable {
         this.definitionContainer = new DefinitionContainer(parentContainer);
         this.matchReplaceContainer = new MatchReplaceContainer(definitionContainer);
         this.writeContainer = new WriteContainer(definitionContainer, workspace);
+        this.langContainer = new LangContainer(definitionContainer);
         this.useContainer = new UseContainer();
         this.characterContainer = new CharacterContainer(definitionContainer);
+        this.workspace = workspace;
+    }
+
+    @NotNull
+    public Workspace workspace() {
+        return workspace;
     }
 
     private void declareParameters() throws DefinitionException {
@@ -107,6 +124,7 @@ public class Template implements PackScope, Parseable {
         applyMatchStatements(usedIn, temporaryContainer);
         applyWriteStatements(usedIn, temporaryContainer);
         applyCharacterStatements(usedIn, temporaryContainer);
+        applyLangStatements(usedIn, temporaryContainer);
         useContainer.applyAll(usedIn, templateContainer, temporaryContainer);
     }
 
@@ -120,6 +138,7 @@ public class Template implements PackScope, Parseable {
         applyMatchStatements(usedIn, temporaryContainer);
         applyWriteStatements(usedIn, temporaryContainer);
         applyCharacterStatements(usedIn, temporaryContainer);
+        applyLangStatements(usedIn, temporaryContainer);
         useContainer.applyAll(usedIn, templateContainer, temporaryContainer);
     }
 
@@ -173,6 +192,16 @@ public class Template implements PackScope, Parseable {
                     matchReplaceStatement.matches(), matchReplaceStatement.replacements());
 
             usedIn.matchReplaceContainer().addMatchReplaceStatement(finalizedStatement);
+        }
+    }
+
+    private void applyLangStatements(@NotNull final PackScope usedIn,
+                                     @NotNull final DefinitionContainer temporaryContainer) {
+        for (final LangStatement langStatement : langContainer().langStatements()) {
+            final LangStatement finalizedStatement = new LangStatement(temporaryContainer,
+                    langStatement.replacements(), langStatement.languageFileMatches());
+
+            usedIn.workspace().langContainer().addLangStatement(finalizedStatement);
         }
     }
 
@@ -235,6 +264,11 @@ public class Template implements PackScope, Parseable {
     }
 
     @NotNull
+    public LangContainer langContainer() {
+        return langContainer;
+    }
+
+    @NotNull
     public Map<Token, Optional<Token>> parameters() {
         return Collections.unmodifiableMap(parameters);
     }
@@ -256,6 +290,7 @@ public class Template implements PackScope, Parseable {
         writeContainer().parseFromAST(templateScope, packScope);
         characterContainer().parseFromAST(templateScope, packScope);
         useContainer().parseFromAST(templateScope, packScope);
+        langContainer().parseFromAST(templateScope, packScope);
     }
 
     private void parseDefaultTemplateParameters(@NotNull final Node templateParameters,
@@ -310,6 +345,8 @@ public class Template implements PackScope, Parseable {
                 ", matchReplaceContainer=" + matchReplaceContainer +
                 ", writeContainer=" + writeContainer +
                 ", useContainer=" + useContainer +
+                ", langContainer=" + langContainer +
+                ", characterContainer=" + characterContainer +
                 '}';
     }
 

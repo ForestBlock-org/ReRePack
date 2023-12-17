@@ -34,6 +34,14 @@ public class LangStatement implements Parseable, Initializable {
         this.languageFileMatches = new HashSet<>();
     }
 
+    public LangStatement(@NotNull final DefinitionContainer definitionContainer,
+                         @NotNull final Set<TokenPredicate> replacements,
+                         @NotNull final Set<Token> languageFileMatches) {
+        this.definitionContainer = definitionContainer;
+        this.replacements = new HashSet<>(replacements);
+        this.languageFileMatches = new HashSet<>(languageFileMatches);
+    }
+
     @NotNull
     public Set<TokenPredicate> replacements() {
         return replacements;

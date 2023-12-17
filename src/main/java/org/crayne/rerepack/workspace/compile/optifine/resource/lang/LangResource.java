@@ -51,6 +51,15 @@ public class LangResource implements JsonResource {
         return languageFile;
     }
 
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final LangResource that = (LangResource) o;
+
+        return languageFile.equals(that.languageFile);
+    }
+
     public int hashCode() {
         return languageFile.hashCode();
     }

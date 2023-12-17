@@ -63,7 +63,7 @@ public class WorkspaceBuilder {
     public boolean readPackFiles() {
         final Map<PackFile, Node> packNodeMap = new HashMap<>();
         final Iterator<File> packFileIterator = FileUtils.iterateFiles(directory,
-                new String[] {"rpk"}, true);
+                new String[]{"rpk"}, true);
 
         try {
             while (packFileIterator.hasNext()) {
@@ -92,10 +92,16 @@ public class WorkspaceBuilder {
                 packFile.useContainer().applyAll(packFile, workspace.templateContainer());
                 packFile.initialize(); // also handles global definitions
             } catch (final WorkspaceException e) {
-                handleWorkspaceError(packFile, e);
+                handleWorkspaceError(e);
                 success.set(false);
             }
         });
+        try {
+            workspace.langContainer().initialize();
+        } catch (final WorkspaceException e) {
+            handleWorkspaceError(e);
+            success.set(false);
+        }
         return success.get();
     }
 
@@ -105,7 +111,7 @@ public class WorkspaceBuilder {
             try {
                 parseableFunction.apply(packFile).parseFromAST(ast, packFile);
             } catch (final WorkspaceException e) {
-                handleWorkspaceError(packFile, e);
+                handleWorkspaceError(e);
             }
         });
     }
@@ -136,7 +142,7 @@ public class WorkspaceBuilder {
         return packPath.substring(workspacePath.length() + 1).replace("/", ".");
     }
 
-    private void handleWorkspaceError(@NotNull final PackFile pack, @NotNull final WorkspaceException e) {
+    private void handleWorkspaceError(@NotNull final WorkspaceException e) {
         logger.log(e.getMessage(), LoggingLevel.WORKSPACE_ERROR);
 
         e.traceBackTokens().forEach(t -> logger.log(PositionInformationMessage.Builder
@@ -162,7 +168,7 @@ public class WorkspaceBuilder {
             packNodeMap.put(pack, packAST);
             packContentMap.put(file, content);
         } catch (final WorkspaceException e) {
-            handleWorkspaceError(pack, e);
+            handleWorkspaceError(e);
             throw new WorkspaceException(e);
         }
     }

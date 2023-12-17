@@ -1,5 +1,6 @@
 package org.crayne.rerepack.workspace.pack;
 
+import org.crayne.rerepack.workspace.Workspace;
 import org.crayne.rerepack.workspace.pack.character.CharacterContainer;
 import org.crayne.rerepack.workspace.pack.definition.DefinitionContainer;
 import org.crayne.rerepack.workspace.pack.match.MatchReplaceContainer;
@@ -23,6 +24,9 @@ public interface PackScope {
 
     @NotNull
     CharacterContainer characterContainer();
+
+    @NotNull
+    Workspace workspace();
 
 
 }
