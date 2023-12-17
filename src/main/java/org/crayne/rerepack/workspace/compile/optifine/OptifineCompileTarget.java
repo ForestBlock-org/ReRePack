@@ -251,8 +251,16 @@ public class OptifineCompileTarget implements CompileTarget {
             return;
         }
         final double resolution = characterStatement.resolution();
+        final int leftXOffset = 100;
         final int scaledSplitSize = (int) (256 / resolution);
-        final List<ImageSplit> splitTextures = ImageSplit.splitImage(originalImage, 256, resolution);
+        final StringBuilder text = new StringBuilder(FontResource.createFullWidthSpace(-leftXOffset - 8));
+        final List<ImageSplit> splitTextures = ImageSplit.splitImage(originalImage, 256, resolution,
+                characterStatement.characterList().get(0).charAt(0), text);
+
+        if (splitTextures.size() > 1)
+            workspace.logger().info("Character texture " + copyFrom.getName() + " was split into "
+                    + splitTextures.size() + " textures due to exceeding the maximum size. " +
+                    "Full string to use ingame for display: " + text);
 
         try {
             for (final ImageSplit imageSplit : splitTextures) {

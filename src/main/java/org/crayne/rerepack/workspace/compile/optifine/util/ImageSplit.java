@@ -1,5 +1,6 @@
 package org.crayne.rerepack.workspace.compile.optifine.util;
 
+import org.crayne.rerepack.workspace.compile.optifine.resource.font.FontResource;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -14,7 +15,8 @@ public class ImageSplit {
     @NotNull
     private final BufferedImage splitImage;
 
-    public ImageSplit(final int row, final int column, final int splitIndex, final int splitSize, @NotNull final BufferedImage sourceImage) {
+    public ImageSplit(final int row, final int column, final int splitIndex,
+                      final int splitSize, @NotNull final BufferedImage sourceImage) {
         this.row = row;
         this.column = column;
         this.splitIndex = splitIndex;
@@ -35,7 +37,9 @@ public class ImageSplit {
 
     @NotNull
     public static List<ImageSplit> splitImage(@NotNull final BufferedImage sourceImage,
-                                              final int splitSize, final double resolution) {
+                                              final int splitSize, final double resolution,
+                                              final char unicodeStartChar,
+                                              @NotNull final StringBuilder text) {
 
         final double scale = 1.0d / resolution;
         final int height = sourceImage.getHeight(), width = sourceImage.getWidth();
@@ -50,7 +54,14 @@ public class ImageSplit {
         for (int row = 0; row < splitRows; row++) {
             for (int col = 0; col < splitCols; col++) {
                 final boolean last = i == splits.length - 1;
+
+                final boolean endOfLine = col == splitCols - 1;
+                final int space = endOfLine ? -(scaledSplitSize * (col + 1)) - 1 : -1;
+
+                text.append((char) (unicodeStartChar + i));
+
                 splits[i] = new ImageSplit(row, col, i, splitSize, sourceImage);
+                if (!last) text.append(FontResource.createFullWidthSpace(space));
                 i++;
             }
         }
