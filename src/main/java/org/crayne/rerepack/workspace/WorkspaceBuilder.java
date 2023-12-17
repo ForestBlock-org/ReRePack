@@ -143,7 +143,6 @@ public class WorkspaceBuilder {
                 .createBuilder(LoggingLevel.HELP)
                 .positionInformation(t, packContentMap.get(t.file()))
                 .build()));
-        e.printStackTrace();
     }
 
     private void parsePackFile(@NotNull final File file,
