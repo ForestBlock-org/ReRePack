@@ -1,6 +1,5 @@
-package org.crayne.rerepack.workspace.compile.optifine.resource.font.space;
+package org.crayne.rerepack.workspace.compile.optifine.resource.font;
 
-import org.crayne.rerepack.workspace.compile.optifine.resource.font.FontResource;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;

@@ -29,3 +29,9 @@ template create_gui_5(require unicode, require texture) {
 template create_gui_6(require unicode, require texture) {
     create_gui(_unicode = "$(unicode)", _texture = "$(texture)", base_ascent = "39")
 }
+
+lang {
+    "*"
+} replace {
+    "container.inventory" = ""
+}

@@ -7,20 +7,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
-public class VanillaItem {
+public class VanillaItems {
+
+    private VanillaItems() {}
 
     @NotNull
     private static final Set<String> VANILLA_ITEMS = new HashSet<>();
 
     public static void loadVanillaItems() {
-        try (final InputStream in = VanillaItem.class.getResourceAsStream("/items_vanilla.txt")) {
+        try (final InputStream in = VanillaItems.class.getResourceAsStream("/items_vanilla.txt")) {
             assert in != null;
             try (final BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
                 reader.lines().forEach(VANILLA_ITEMS::add);
@@ -63,20 +62,7 @@ public class VanillaItem {
 
     @NotNull
     public static Set<String> allMatching(@NotNull final String pattern) {
-        final String withoutNamespace = withoutMinecraftNamespacedKey(pattern);
-
-        if (!withoutNamespace.contains("*")) {
-            final Optional<String> singleMatch = VANILLA_ITEMS.contains(withoutNamespace)
-                    ? Optional.of(withoutNamespace)
-                    : Optional.empty();
-
-            return singleMatch
-                    .map(Collections::singleton)
-                    .orElse(Collections.emptySet());
-        }
-        return VANILLA_ITEMS.stream()
-                .filter(i -> StringUtil.matchPattern(withoutNamespace.toLowerCase(), i))
-                .collect(Collectors.toSet());
+        return StringUtil.allMatching(VANILLA_ITEMS, withoutMinecraftNamespacedKey(pattern));
     }
 
 }

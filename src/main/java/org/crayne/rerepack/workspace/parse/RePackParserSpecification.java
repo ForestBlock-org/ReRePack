@@ -61,7 +61,10 @@ public class RePackParserSpecification {
             USE_STATEMENT = "useStatement",
             CHAR_STATEMENT = "charStatement",
             CHAR_TYPE_SPEC_BITMAP = "charTypeSpecBitmap",
-            CHAR_SINGLE_STATEMENT = "charSingleStatement";
+            CHAR_SINGLE_STATEMENT = "charSingleStatement",
+            LANG_STATEMENT = "langStatement",
+            LANG_SINGLE_EXPRESSION = "langSingleExpression",
+            LANG_SINGLE_REPLACEMENT = "langSingleReplacement";
 
     @NotNull
     private final Scope parentScopeDefinition;
@@ -80,7 +83,9 @@ public class RePackParserSpecification {
 
                 writeKeyword = literal("write"),
 
-                charKeyword = literal("char");
+                charKeyword = literal("char"),
+
+                langKeyword = literal("lang");
 
         final TokenType
                 identifier = token(IDENTIFIER),
@@ -109,7 +114,10 @@ public class RePackParserSpecification {
                 useParam = expr(identifier, equalsSign, stringLiteral),
                 optionalComma = expr(commaSign),
                 charStatementPrefix = expr(charKeyword, stringLiteral, stringLiteral),
-                charSingleStatement = expr(stringLiteral, equalsSign, stringLiteral);
+                charSingleStatement = expr(stringLiteral, equalsSign, stringLiteral),
+                langSingleExpression = expr(stringLiteral),
+                langSingleReplacement = expr(stringLiteral, equalsSign, stringLiteral),
+                langPrefix = expr(langKeyword);
 
         final Scope
                 matchScope = createScope().rule(SINGLE_MATCH_EXPRESSION, singleMatchExpression),
@@ -128,6 +136,10 @@ public class RePackParserSpecification {
                         .rule(USE_PARAM_SPEC, useParam)
                         .rule(OPTIONAL_COMMA, optionalComma),
 
+                langScope = createScope().rule(LANG_SINGLE_EXPRESSION, langSingleExpression),
+                langReplaceScope = createScope()
+                        .rule(LANG_SINGLE_REPLACEMENT, langSingleReplacement),
+
                 charScope = createScope()
                         .rule(CHAR_SINGLE_STATEMENT, charSingleStatement),
 
@@ -145,7 +157,8 @@ public class RePackParserSpecification {
                         .rule(WRITE_STATEMENT, writePrefix, writeScope)
                         .rule(TEMPLATE_STATEMENT, templatePrefix, templateParamScope, templateScope)
                         .rule(USE_STATEMENT, useStatement, useParamScope)
-                        .rule(CHAR_STATEMENT, charStatementPrefix, charScope);
+                        .rule(CHAR_STATEMENT, charStatementPrefix, charScope)
+                        .rule(LANG_STATEMENT, langPrefix, langScope, replacePrefix, langReplaceScope);
 
         this.parentScopeDefinition = parentScope;
         this.parser = new ExpressionParser(parentScope, logger, RePackLexerSpecification.INSTANCE);

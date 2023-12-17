@@ -1,24 +1,18 @@
-package org.crayne.rerepack.workspace.compile.optifine.resource.font.space;
+package org.crayne.rerepack.workspace.compile.optifine.resource.lang;
 
-import com.google.gson.Gson;
-import org.crayne.rerepack.workspace.compile.optifine.resource.JsonResource;
 import org.crayne.rerepack.workspace.compile.optifine.resource.font.FontResource;
+import org.crayne.rerepack.workspace.compile.optifine.resource.font.SpaceFontResource;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
-public class SpaceFontLangResource implements JsonResource {
-
-    @NotNull
-    private final Map<String, Object> values;
+public class SpaceFontLangResource extends LangResource {
 
     @NotNull
     public static final String LANG_JSON_FILE = SpaceFontResource.SPACE_FONT_ASSETS_PATH + "/lang/en_us.json";
 
     public SpaceFontLangResource() {
-        this.values = new LinkedHashMap<>();
+        super(LANG_JSON_FILE);
     }
 
     public void addAllSpaces() {
@@ -28,11 +22,11 @@ public class SpaceFontLangResource implements JsonResource {
     }
 
     public void addTranslatables() {
-        values.put("newlayer", "\uDAC0\uDC00");
-        values.put("-infinity", "\uDAC0\uDC01");
-        values.put("infinity", "\uDB3F\uDFFF");
-        values.put("-max", FontResource.createFullWidthSpace(-8192));
-        values.put("max", FontResource.createFullWidthSpace(8192));
+        values().put("newlayer", "\uDAC0\uDC00");
+        values().put("-infinity", "\uDAC0\uDC01");
+        values().put("infinity", "\uDB3F\uDFFF");
+        values().put("-max", FontResource.createFullWidthSpace(-8192));
+        values().put("max", FontResource.createFullWidthSpace(8192));
     }
 
     @NotNull
@@ -46,8 +40,8 @@ public class SpaceFontLangResource implements JsonResource {
                 final double width = (double) n / denom;
                 final String space = FontResource.createFractionalSpace(width);
                 final String spaceNegative = FontResource.createFractionalSpace(width * -1);
-                values.put("space." + n + "/" + denom, space);
-                values.put("offset." + n + "/" + denom, space + "%s" + spaceNegative);
+                values().put("space." + n + "/" + denom, space);
+                values().put("offset." + n + "/" + denom, space + "%s" + spaceNegative);
             }
         }
     }
@@ -56,13 +50,9 @@ public class SpaceFontLangResource implements JsonResource {
         for (int i = -8192; i <= 8192; i++) {
             final String space = FontResource.createFullWidthSpace(i);
             final String spaceNegative = FontResource.createFullWidthSpace(i * -1);
-            values.put("space." + i, space);
-            values.put("offset." + i, space + "%s" + spaceNegative);
+            values().put("space." + i, space);
+            values().put("offset." + i, space + "%s" + spaceNegative);
         }
     }
 
-    @NotNull
-    public String encode() {
-        return new Gson().toJson(values);
-    }
 }

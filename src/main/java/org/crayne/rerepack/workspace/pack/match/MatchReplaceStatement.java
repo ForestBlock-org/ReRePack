@@ -2,7 +2,7 @@ package org.crayne.rerepack.workspace.pack.match;
 
 import org.crayne.rerepack.syntax.Token;
 import org.crayne.rerepack.syntax.ast.Node;
-import org.crayne.rerepack.util.minecraft.VanillaItem;
+import org.crayne.rerepack.util.minecraft.VanillaItems;
 import org.crayne.rerepack.workspace.except.WorkspaceException;
 import org.crayne.rerepack.workspace.pack.PackScope;
 import org.crayne.rerepack.workspace.pack.definition.Definition;
@@ -40,15 +40,12 @@ public class MatchReplaceStatement implements Parseable, Initializable {
     }
 
     @NotNull
-    public static Set<Token> parseItems(@NotNull final Token key) {
+    public static Set<String> parseItems(@NotNull final Token key) {
         final String keyValue = key.toString();
-        final boolean moddedItem = VanillaItem.moddedItem(keyValue);
-        if (moddedItem) return Collections.singleton(key);
+        final boolean moddedItem = VanillaItems.moddedItem(keyValue);
+        if (moddedItem) return Collections.singleton(keyValue);
 
-        return VanillaItem.allMatching(keyValue)
-                .stream()
-                .map(s -> Token.of(s, key))
-                .collect(Collectors.toSet());
+        return VanillaItems.allMatching(keyValue);
     }
 
     public void parseFromAST(@NotNull final Node ast, @NotNull final PackScope packScope) throws WorkspaceException {

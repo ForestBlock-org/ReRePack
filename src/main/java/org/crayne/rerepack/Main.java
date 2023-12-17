@@ -1,7 +1,7 @@
 package org.crayne.rerepack;
 
 import org.crayne.rerepack.syntax.parser.ExpressionParser;
-import org.crayne.rerepack.util.minecraft.VanillaItem;
+import org.crayne.rerepack.util.minecraft.VanillaItems;
 import org.crayne.rerepack.workspace.Workspace;
 import org.crayne.rerepack.workspace.WorkspaceBuilder;
 import org.crayne.rerepack.workspace.compile.optifine.OptifineCompileTarget;
@@ -13,7 +13,7 @@ import java.io.File;
 public class Main {
 
     public static void main(@NotNull final String... args) {
-        VanillaItem.loadVanillaItems();
+        VanillaItems.loadVanillaItems();
 
         final File workspaceDirectory = new File("sample");
         final File outputDirectory = new File("sample-out");

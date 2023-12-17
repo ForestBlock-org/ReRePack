@@ -32,7 +32,9 @@ public class RePackLexerSpecification extends LexerSpecification {
 
             "write",
 
-            "char"
+            "char",
+
+            "lang"
     );
 
     @NotNull

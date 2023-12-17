@@ -1,0 +1,14 @@
+1. start by creating iterators for every parser rule there is in the current scope
+2. iterate over every token one by one
+   with every iteration:
+   a. if the next token doesnt match with the expected token of the rule, discard the current iterator
+   b. if the next token matches the expected token, keep the iterator
+   c. if a valid beginning of a scope was found:
+   		1. identify all possible scope rules by iterating over all current expression iterators and finding which ones are at a beginning of a scope
+   		2. for each scope: repeat from the beginning until the corresponding scope end character was found
+   		3. if during this process any rule was broken, ignore the scope the rule was broken in
+   		4. add the scope to the previous node
+   d. if there are no more iterators:
+   		1. add the currently collected expression into the current scope
+   		2. create the iterators again
+         3. iterate over the next tokens with the same scheme

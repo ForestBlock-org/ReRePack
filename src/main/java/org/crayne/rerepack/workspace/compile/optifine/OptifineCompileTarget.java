@@ -4,18 +4,20 @@ import org.apache.commons.io.FileUtils;
 import org.crayne.rerepack.syntax.Token;
 import org.crayne.rerepack.util.logging.LoggingLevel;
 import org.crayne.rerepack.util.logging.message.TraceBackMessage;
-import org.crayne.rerepack.util.minecraft.VanillaItem;
 import org.crayne.rerepack.workspace.Workspace;
 import org.crayne.rerepack.workspace.compile.CompileTarget;
 import org.crayne.rerepack.workspace.compile.optifine.resource.cit.CITResource;
 import org.crayne.rerepack.workspace.compile.optifine.resource.font.FontResource;
-import org.crayne.rerepack.workspace.compile.optifine.resource.font.space.SpaceFontLangResource;
-import org.crayne.rerepack.workspace.compile.optifine.resource.font.space.SpaceFontResource;
+import org.crayne.rerepack.workspace.compile.optifine.resource.lang.LangResource;
+import org.crayne.rerepack.workspace.compile.optifine.resource.lang.SpaceFontLangResource;
+import org.crayne.rerepack.workspace.compile.optifine.resource.font.SpaceFontResource;
 import org.crayne.rerepack.workspace.compile.optifine.util.ImageSplit;
 import org.crayne.rerepack.workspace.pack.PackFile;
 import org.crayne.rerepack.workspace.pack.character.CharacterContainer;
 import org.crayne.rerepack.workspace.pack.character.CharacterStatement;
+import org.crayne.rerepack.workspace.pack.lang.LangStatement;
 import org.crayne.rerepack.workspace.pack.match.MatchReplaceContainer;
+import org.crayne.rerepack.workspace.pack.match.MatchReplaceStatement;
 import org.crayne.rerepack.workspace.pack.write.WriteContainer;
 import org.crayne.rerepack.workspace.pack.write.WriteStatement;
 import org.jetbrains.annotations.NotNull;
@@ -51,6 +53,7 @@ public class OptifineCompileTarget implements CompileTarget {
         compileAllFileWrites(workspace);
         compileAllCharacterReplacements(workspace);
         compileSpaceFont(workspace);
+        compileLangStatements(workspace);
     }
 
     private static void createParentDirectories(@NotNull final File file) throws IOException {
@@ -68,6 +71,23 @@ public class OptifineCompileTarget implements CompileTarget {
             return true;
         }
         return false;
+    }
+
+    public void compileLangStatements(@NotNull final Workspace workspace) {
+        final Map<LangResource, Set<LangStatement>> langResourceSetMap = new HashMap<>();
+        workspace.langContainer().langStatements().forEach(langStatement -> {
+            final Set<LangResource> langResources = LangResource.createLangResources(langStatement);
+            langResources.forEach(langResource -> {
+                langResourceSetMap.putIfAbsent(langResource, new HashSet<>());
+                langResourceSetMap.get(langResource).add(langStatement);
+            });
+        });
+
+        langResourceSetMap.forEach((langResource, langStatements) ->
+                langStatements.forEach(langResource::addLangStatementElements));
+
+        for (final LangResource langResource : langResourceSetMap.keySet())
+            compileLanguageJson(workspace, langResource);
     }
 
     public void compileFileCopy(@NotNull final Workspace workspace, @NotNull final String source,
@@ -174,20 +194,24 @@ public class OptifineCompileTarget implements CompileTarget {
         }
     }
 
-    public void compileSpaceFontLangJson(@NotNull final Workspace workspace) {
+    public void compileLanguageJson(@NotNull final Workspace workspace, @NotNull final LangResource langResource) {
         try {
-            final SpaceFontLangResource spaceFontLangResource = new SpaceFontLangResource();
-            spaceFontLangResource.addAllSpaces();
-
-            final File langJson = new File(outputDirectory, SpaceFontLangResource.LANG_JSON_FILE);
+            final File langJson = new File(outputDirectory, langResource.languageName());
             createParentDirectories(langJson);
 
-            Files.writeString(langJson.toPath(), spaceFontLangResource.encode(), StandardCharsets.UTF_8);
+            Files.writeString(langJson.toPath(), langResource.encode(), StandardCharsets.UTF_8);
         } catch (final IOException e) {
-            workspace.logger().log("Could not create space font en_us.json file: " + e.getMessage(),
+            workspace.logger().log("Could not create language file" + langResource.languageName() + ": " + e.getMessage(),
                     LoggingLevel.PACKING_ERROR);
             e.printStackTrace();
         }
+    }
+
+    public void compileSpaceFontLangJson(@NotNull final Workspace workspace) {
+        final SpaceFontLangResource spaceFontLangResource = new SpaceFontLangResource();
+        spaceFontLangResource.addAllSpaces();
+
+        compileLanguageJson(workspace, spaceFontLangResource);
     }
 
     public void compileSpaceFontDefaultJson(@NotNull final Workspace workspace) {
@@ -275,7 +299,7 @@ public class OptifineCompileTarget implements CompileTarget {
         citResourceSetMap.forEach((citResource, items) -> {
             final Set<String> itemMatches = new HashSet<>();
             items.forEach(item -> {
-                final Set<String> matched = VanillaItem.allMatching(item.token());
+                final Set<String> matched = MatchReplaceStatement.parseItems(item);
                 if (matched.isEmpty()) workspace.logger().log(TraceBackMessage.Builder
                         .createBuilder("No items were found for item match '" + item + "'", LoggingLevel.WARN)
                         .at(item)

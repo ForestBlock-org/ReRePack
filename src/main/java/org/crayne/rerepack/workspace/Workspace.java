@@ -3,6 +3,7 @@ package org.crayne.rerepack.workspace;
 import org.crayne.rerepack.util.logging.Logger;
 import org.crayne.rerepack.workspace.pack.PackFile;
 import org.crayne.rerepack.workspace.pack.definition.GlobalDefinitionContainer;
+import org.crayne.rerepack.workspace.pack.lang.LangContainer;
 import org.crayne.rerepack.workspace.pack.template.TemplateContainer;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,6 +21,9 @@ public class Workspace {
     private final TemplateContainer templateContainer;
 
     @NotNull
+    private final LangContainer langContainer;
+
+    @NotNull
     private final Set<PackFile> packFiles;
 
     @NotNull
@@ -31,6 +35,7 @@ public class Workspace {
     public Workspace(@NotNull final Logger logger, @NotNull final File directory) {
         this.globalDefinitionContainer = new GlobalDefinitionContainer();
         this.templateContainer = new TemplateContainer();
+        this.langContainer = new LangContainer(globalDefinitionContainer);
         this.packFiles = new HashSet<>();
         this.logger = logger;
         this.directory = directory;
@@ -69,12 +74,19 @@ public class Workspace {
     }
 
     @NotNull
+    public LangContainer langContainer() {
+        return langContainer;
+    }
+
+    @NotNull
     public String toString() {
         return "Workspace{" +
                 "globalDefinitionContainer=" + globalDefinitionContainer +
                 ", templateContainer=" + templateContainer +
+                ", langContainer=" + langContainer +
                 ", packFiles=" + packFiles +
+                ", logger=" + logger +
+                ", directory=" + directory +
                 '}';
     }
-
 }

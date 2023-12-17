@@ -72,8 +72,9 @@ public class WorkspaceBuilder {
             logger.log(e.getMessage(), LoggingLevel.WORKSPACE_ERROR);
             return;
         }
-        parseAllFromAST(packNodeMap, packFile -> workspace.globalDefinitionContainer());
-        parseAllFromAST(packNodeMap, packFile -> workspace.templateContainer());
+        parseAllFromAST(packNodeMap, workspace.globalDefinitionContainer());
+        parseAllFromAST(packNodeMap, workspace.templateContainer());
+        parseAllFromAST(packNodeMap, workspace.langContainer());
         parseAllFromAST(packNodeMap, PackFile::definitionContainer);
         parseAllFromAST(packNodeMap, PackFile::matchReplaceContainer);
         parseAllFromAST(packNodeMap, PackFile::writeContainer);
@@ -99,6 +100,11 @@ public class WorkspaceBuilder {
                 handleWorkspaceError(packFile, e);
             }
         });
+    }
+
+    private void parseAllFromAST(@NotNull final Map<PackFile, Node> packFileNodeMap,
+                                 @NotNull final Parseable parseable) {
+        parseAllFromAST(packFileNodeMap, packFile -> parseable);
     }
 
     private void forEachPackFile(@NotNull final Map<PackFile, Node> packFileNodeMap,

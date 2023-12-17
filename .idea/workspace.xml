@@ -9,21 +9,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fa8e8d78-b363-4df8-82ca-a951938c61c4" name="Changes" comment="font file creation finished as well as recreation of space font natively">
-      <change afterPath="$PROJECT_DIR$/sample/assets/gui/forestshop.rpk" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sample/assets/gui/textures/forestshop.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sample/templates/custom_gui.rpk" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/util/ImageSplit.java" afterDir="false" />
+    <list default="true" id="fa8e8d78-b363-4df8-82ca-a951938c61c4" name="Changes" comment="split texture support -&gt; guis can now be added easily">
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/minecraft/LanguageFiles.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/resource/lang/LangResource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/lang/LangContainer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/lang/LangStatement.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample/templates/custom_gui.rpk" beforeDir="false" afterPath="$PROJECT_DIR$/sample/templates/custom_gui.rpk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/minecraft/VanillaItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/minecraft/VanillaItems.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/string/StringUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/string/StringUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/Workspace.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/Workspace.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/WorkspaceBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/WorkspaceBuilder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/OptifineCompileTarget.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/OptifineCompileTarget.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/resource/Resource.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/resource/Resource.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/character/CharacterStatement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/character/CharacterStatement.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/container/MapContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/container/MapContainer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/definition/DefinitionContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/definition/DefinitionContainer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/template/Template.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/template/Template.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/template/use/UseContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/template/use/UseContainer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/template/use/UseStatement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/template/use/UseStatement.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/resource/font/space/SpaceFontLangResource.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/resource/lang/SpaceFontLangResource.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/resource/font/space/SpaceFontResource.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/resource/font/SpaceFontResource.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/match/MatchReplaceStatement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/pack/match/MatchReplaceStatement.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/parse/RePackLexerSpecification.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/parse/RePackLexerSpecification.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/parse/RePackParserSpecification.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/parse/RePackParserSpecification.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -100,7 +102,7 @@
       <module name="ReRePack" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="org.crayne.rerepack.workspace.compile.optifine.resource.font.space.*" />
+          <option name="PATTERN" value="org.crayne.rerepack.workspace.compile.optifine.resource.font.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -204,7 +206,14 @@
       <option name="project" value="LOCAL" />
       <updated>1702238021640</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="split texture support -&gt; guis can now be added easily">
+      <created>1702763751298</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1702763751298</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -226,6 +235,7 @@
     <MESSAGE value="finished parser as well as analyzing part + initialization -&gt; can now move on to converting to optifine" />
     <MESSAGE value="cit file creation finished" />
     <MESSAGE value="font file creation finished as well as recreation of space font natively" />
-    <option name="LAST_COMMIT_MESSAGE" value="font file creation finished as well as recreation of space font natively" />
+    <MESSAGE value="split texture support -&gt; guis can now be added easily" />
+    <option name="LAST_COMMIT_MESSAGE" value="split texture support -&gt; guis can now be added easily" />
   </component>
 </project>
