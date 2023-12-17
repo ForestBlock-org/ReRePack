@@ -2,6 +2,7 @@ package org.crayne.rerepack.workspace.pack.template;
 
 import org.crayne.rerepack.syntax.Token;
 import org.crayne.rerepack.syntax.ast.Node;
+import org.crayne.rerepack.workspace.Workspace;
 import org.crayne.rerepack.workspace.except.DefinitionException;
 import org.crayne.rerepack.workspace.except.WorkspaceException;
 import org.crayne.rerepack.workspace.pack.PackScope;
@@ -13,6 +14,7 @@ import org.crayne.rerepack.workspace.pack.match.MatchReplaceContainer;
 import org.crayne.rerepack.workspace.pack.match.MatchReplaceStatement;
 import org.crayne.rerepack.workspace.pack.template.use.UseContainer;
 import org.crayne.rerepack.workspace.pack.template.use.UseStatement;
+import org.crayne.rerepack.workspace.pack.write.CopyStatement;
 import org.crayne.rerepack.workspace.pack.write.WriteContainer;
 import org.crayne.rerepack.workspace.pack.write.WriteStatement;
 import org.crayne.rerepack.workspace.parse.parseable.Parseable;
@@ -49,24 +51,25 @@ public class Template implements PackScope, Parseable {
 
     public Template(@NotNull final Token identifier,
                     @NotNull final DefinitionContainer parentContainer,
-                    @NotNull final Map<Token, Optional<Token>> parameters) throws DefinitionException {
+                    @NotNull final Map<Token, Optional<Token>> parameters,
+                    @NotNull final Workspace workspace) throws DefinitionException {
         this.identifier = identifier;
         this.parameters = new HashMap<>(parameters);
         this.definitionContainer = new DefinitionContainer(parentContainer);
         this.matchReplaceContainer = new MatchReplaceContainer(definitionContainer);
-        this.writeContainer = new WriteContainer(definitionContainer);
+        this.writeContainer = new WriteContainer(definitionContainer, workspace);
         this.useContainer = new UseContainer();
         this.characterContainer = new CharacterContainer(definitionContainer);
 
         declareParameters();
     }
 
-    public Template(@NotNull final DefinitionContainer parentContainer) {
+    public Template(@NotNull final DefinitionContainer parentContainer, @NotNull final Workspace workspace) {
         this.identifier = null;
         this.parameters = new HashMap<>();
         this.definitionContainer = new DefinitionContainer(parentContainer);
         this.matchReplaceContainer = new MatchReplaceContainer(definitionContainer);
-        this.writeContainer = new WriteContainer(definitionContainer);
+        this.writeContainer = new WriteContainer(definitionContainer, workspace);
         this.useContainer = new UseContainer();
         this.characterContainer = new CharacterContainer(definitionContainer);
     }
@@ -180,6 +183,12 @@ public class Template implements PackScope, Parseable {
                     writeStatement.destinationPath(), writeStatement.lines());
 
             usedIn.writeContainer().addWriteStatement(finalizedStatement);
+        }
+        for (final CopyStatement copyStatement : writeContainer().copyStatements()) {
+            final CopyStatement finalizedStatement = new CopyStatement(copyStatement.destinationPath(),
+                    copyStatement.sourcePath(), temporaryContainer, usedIn.writeContainer().workspace());
+
+            usedIn.writeContainer().addCopyStatement(finalizedStatement);
         }
     }
 

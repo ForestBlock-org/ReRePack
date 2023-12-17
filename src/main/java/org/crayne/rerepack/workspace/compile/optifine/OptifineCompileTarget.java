@@ -119,12 +119,19 @@ public class OptifineCompileTarget implements CompileTarget {
                 .map(WriteContainer::writeStatements)
                 .flatMap(Collection::stream)
                 .forEach(w -> compileWriteStatement(workspace, w, alreadyWrittenTo));
+
+        workspace.packFiles()
+                .stream()
+                .map(PackFile::writeContainer)
+                .map(WriteContainer::copyStatements)
+                .flatMap(Collection::stream)
+                .forEach(w -> compileWriteStatement(workspace, w, alreadyWrittenTo));
     }
 
     public void compileWriteStatement(@NotNull final Workspace workspace,
                                       @NotNull final WriteStatement writeStatement,
                                       @NotNull final Set<String> alreadyWrittenTo) {
-        final Token destinationPathToken = writeStatement.destinationPath();
+        final Token destinationPathToken = writeStatement.initializedDestinationPath().orElseThrow();
         final String destinationPath = destinationPathToken.token();
 
         if (alreadyWrittenTo.contains(destinationPath))

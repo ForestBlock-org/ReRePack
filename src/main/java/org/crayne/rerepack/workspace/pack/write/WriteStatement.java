@@ -9,10 +9,11 @@ import org.crayne.rerepack.workspace.pack.definition.DefinitionContainer;
 import org.crayne.rerepack.workspace.parse.parseable.Initializable;
 import org.crayne.rerepack.workspace.parse.parseable.Parseable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class WriteStatement implements Parseable, Initializable {
 
@@ -21,6 +22,9 @@ public class WriteStatement implements Parseable, Initializable {
 
     @NotNull
     private final Token destinationPath;
+
+    @Nullable
+    private Token initializedDestinationPath;
 
     @NotNull
     private final DefinitionContainer definitionContainer;
@@ -64,10 +68,21 @@ public class WriteStatement implements Parseable, Initializable {
 
         lines.clear();
         lines.addAll(resultLines);
+        initializedDestinationPath = Definition.parseValueByDefinitions(destinationPath, definitionContainer);
+    }
+
+    @NotNull
+    public DefinitionContainer definitionContainer() {
+        return definitionContainer;
     }
 
     public void addLine(@NotNull final Token lineToken) {
         lines.add(lineToken);
+    }
+
+    @NotNull
+    public Optional<Token> initializedDestinationPath() {
+        return Optional.ofNullable(initializedDestinationPath);
     }
 
     @NotNull
@@ -77,7 +92,7 @@ public class WriteStatement implements Parseable, Initializable {
 
     @NotNull
     public List<Token> lines() {
-        return Collections.unmodifiableList(lines);
+        return lines;
     }
 
     @NotNull

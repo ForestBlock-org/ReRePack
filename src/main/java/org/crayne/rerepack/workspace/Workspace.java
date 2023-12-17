@@ -34,7 +34,7 @@ public class Workspace {
 
     public Workspace(@NotNull final Logger logger, @NotNull final File directory) {
         this.globalDefinitionContainer = new GlobalDefinitionContainer();
-        this.templateContainer = new TemplateContainer();
+        this.templateContainer = new TemplateContainer(this);
         this.langContainer = new LangContainer(globalDefinitionContainer);
         this.packFiles = new HashSet<>();
         this.logger = logger;

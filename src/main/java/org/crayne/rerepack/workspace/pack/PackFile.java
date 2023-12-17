@@ -46,7 +46,7 @@ public class PackFile implements PackScope, Initializable {
         this.workspace = workspace;
         this.definitionContainer = new DefinitionContainer(parent);
         this.matchReplaceContainer = new MatchReplaceContainer(definitionContainer);
-        this.writeContainer = new WriteContainer(definitionContainer);
+        this.writeContainer = new WriteContainer(definitionContainer, workspace);
         this.useContainer = new UseContainer(definitionContainer);
         this.characterContainer = new CharacterContainer(definitionContainer);
     }

@@ -31,6 +31,7 @@ public class RePackLexerSpecification extends LexerSpecification {
             "items",
 
             "write",
+            "copy",
 
             "char",
 
