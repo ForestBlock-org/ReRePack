@@ -65,7 +65,8 @@ public class RePackParserSpecification {
             LANG_STATEMENT = "langStatement",
             LANG_SINGLE_EXPRESSION = "langSingleExpression",
             LANG_SINGLE_REPLACEMENT = "langSingleReplacement",
-            COPY_STATEMENT = "copyStatement";
+            COPY_STATEMENT = "copyStatement",
+            COPY_STATEMENT_RAW = "copyStatementRaw";
 
     @NotNull
     private final Scope parentScopeDefinition;
@@ -84,6 +85,7 @@ public class RePackParserSpecification {
 
                 writeKeyword = literal("write"),
                 copyKeyword = literal("copy"),
+                rawKeyword = literal("raw"),
 
                 charKeyword = literal("char"),
 
@@ -121,7 +123,8 @@ public class RePackParserSpecification {
                 langSingleExpression = expr(stringLiteral),
                 langSingleReplacement = expr(stringLiteral, equalsSign, stringLiteral),
                 langPrefix = expr(langKeyword),
-                copyStatement = expr(copyKeyword, stringLiteral, arrow, stringLiteral);
+                copyStatement = expr(copyKeyword, stringLiteral, arrow, stringLiteral),
+                copyStatementRaw = expr(rawKeyword, copyKeyword, stringLiteral, arrow, stringLiteral);
 
         final Scope
                 matchScope = createScope().rule(SINGLE_MATCH_EXPRESSION, singleMatchExpression),
@@ -153,7 +156,8 @@ public class RePackParserSpecification {
                         .rule(WRITE_STATEMENT, writePrefix, writeScope)
                         .rule(CHAR_STATEMENT, charStatementPrefix, charScope)
                         .rule(USE_STATEMENT, useStatement, useParamScope)
-                        .rule(COPY_STATEMENT, copyStatement),
+                        .rule(COPY_STATEMENT, copyStatement)
+                        .rule(COPY_STATEMENT_RAW, copyStatementRaw),
 
                 parentScope = parent()
                         .rule(DEFINITION_STATEMENT, definitionStatement)
@@ -164,7 +168,8 @@ public class RePackParserSpecification {
                         .rule(USE_STATEMENT, useStatement, useParamScope)
                         .rule(CHAR_STATEMENT, charStatementPrefix, charScope)
                         .rule(LANG_STATEMENT, langPrefix, langScope, replacePrefix, langReplaceScope)
-                        .rule(COPY_STATEMENT, copyStatement);
+                        .rule(COPY_STATEMENT, copyStatement)
+                        .rule(COPY_STATEMENT_RAW, copyStatementRaw);
 
         this.parentScopeDefinition = parentScope;
         this.parser = new ExpressionParser(parentScope, logger, RePackLexerSpecification.INSTANCE);

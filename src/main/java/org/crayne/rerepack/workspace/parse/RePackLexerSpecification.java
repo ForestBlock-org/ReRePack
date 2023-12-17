@@ -32,6 +32,7 @@ public class RePackLexerSpecification extends LexerSpecification {
 
             "write",
             "copy",
+            "raw",
 
             "char",
 

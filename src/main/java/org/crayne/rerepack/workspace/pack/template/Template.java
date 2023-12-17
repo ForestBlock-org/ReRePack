@@ -184,9 +184,10 @@ public class Template implements PackScope, Parseable {
 
             usedIn.writeContainer().addWriteStatement(finalizedStatement);
         }
-        for (final CopyStatement copyStatement : writeContainer().copyStatements()) {
+        for (final CopyStatement copyStatement : writeContainer().allCopyStatements()) {
             final CopyStatement finalizedStatement = new CopyStatement(copyStatement.destinationPath(),
-                    copyStatement.sourcePath(), temporaryContainer, usedIn.writeContainer().workspace());
+                    copyStatement.sourcePath(), temporaryContainer, usedIn.writeContainer().workspace(),
+                    copyStatement.raw());
 
             usedIn.writeContainer().addCopyStatement(finalizedStatement);
         }

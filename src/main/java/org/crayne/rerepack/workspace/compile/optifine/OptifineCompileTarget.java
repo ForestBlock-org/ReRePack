@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.crayne.rerepack.workspace.compile.optifine.resource.Resource.fileNameOfPath;
 import static org.crayne.rerepack.workspace.compile.optifine.resource.Resource.withDifferentFileExtension;
@@ -113,19 +114,27 @@ public class OptifineCompileTarget implements CompileTarget {
 
     public void compileAllFileWrites(@NotNull final Workspace workspace) {
         final Set<String> alreadyWrittenTo = new HashSet<>();
-        workspace.packFiles()
+        final Set<WriteContainer> writeContainers = workspace.packFiles()
                 .stream()
                 .map(PackFile::writeContainer)
+                .collect(Collectors.toSet());
+
+        writeContainers.stream()
                 .map(WriteContainer::writeStatements)
                 .flatMap(Collection::stream)
                 .forEach(w -> compileWriteStatement(workspace, w, alreadyWrittenTo));
 
-        workspace.packFiles()
-                .stream()
-                .map(PackFile::writeContainer)
-                .map(WriteContainer::copyStatements)
+        writeContainers.stream()
+                .map(WriteContainer::copyStatementsFull)
                 .flatMap(Collection::stream)
                 .forEach(w -> compileWriteStatement(workspace, w, alreadyWrittenTo));
+
+        writeContainers.stream()
+                .map(WriteContainer::copyStatementsRaw)
+                .flatMap(Collection::stream)
+                .forEach(w -> compileFileCopy(workspace,
+                        w.initializedSourcePath().orElseThrow().token(),
+                        w.initializedDestinationPath().orElseThrow().token()));
     }
 
     public void compileWriteStatement(@NotNull final Workspace workspace,

@@ -26,13 +26,17 @@ public class CopyStatement extends WriteStatement {
     @NotNull
     private final Workspace workspace;
 
+    private final boolean raw;
+
     public CopyStatement(@NotNull final Token destinationPath,
                          @NotNull final Token sourcePath,
                          @NotNull final DefinitionContainer definitionContainer,
-                         @NotNull final Workspace workspace) {
+                         @NotNull final Workspace workspace,
+                         final boolean raw) {
         super(destinationPath, definitionContainer);
         this.sourcePath = sourcePath;
         this.workspace = workspace;
+        this.raw = raw;
     }
 
     @NotNull
@@ -47,15 +51,27 @@ public class CopyStatement extends WriteStatement {
 
     public void initialize() throws WorkspaceException {
         initializedSourcePath = Definition.parseValueByDefinitions(sourcePath, definitionContainer());
+        if (raw) {
+            super.initialize();
+            return;
+        }
+
         final File sourceFile = new File(workspace.directory(), initializedSourcePath.token());
 
         try {
-            Files.readAllLines(sourceFile.toPath()).stream().map(s -> Token.of(s, sourcePath)).forEach(this.lines()::add);
+            Files.readAllLines(sourceFile.toPath())
+                    .stream()
+                    .map(s -> Token.of(s, sourcePath))
+                    .forEach(this.lines()::add);
         } catch (final IOException e) {
             throw new WorkspaceException("Could not copy source file '"
                     + sourceFile + "': " + e.getMessage(), sourcePath);
         }
         super.initialize();
+    }
+
+    public boolean raw() {
+        return raw;
     }
 
     public void parseFromAST(@NotNull final Node ast, @NotNull final PackScope packScope) throws WorkspaceException {

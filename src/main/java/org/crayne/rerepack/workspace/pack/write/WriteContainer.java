@@ -13,9 +13,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import static org.crayne.rerepack.workspace.parse.RePackParserSpecification.COPY_STATEMENT;
-import static org.crayne.rerepack.workspace.parse.RePackParserSpecification.WRITE_STATEMENT;
+import static org.crayne.rerepack.workspace.parse.RePackParserSpecification.*;
 
 public class WriteContainer implements Parseable, Initializable {
 
@@ -47,9 +47,10 @@ public class WriteContainer implements Parseable, Initializable {
     }
 
     @NotNull
-    public CopyStatement createCopyStatement(@NotNull final Token destinationPath, @NotNull final Token sourcePath) {
+    public CopyStatement createCopyStatement(@NotNull final Token destinationPath,
+                                             @NotNull final Token sourcePath, final boolean raw) {
         final CopyStatement writeStatement = new CopyStatement(destinationPath, sourcePath,
-                definitionContainer, workspace);
+                definitionContainer, workspace, raw);
         addCopyStatement(writeStatement);
         return writeStatement;
     }
@@ -72,7 +73,13 @@ public class WriteContainer implements Parseable, Initializable {
         for (final Node copyStatementAST : ast.children(COPY_STATEMENT)) {
             final Token sourcePath = copyStatementAST.child(1).valueClean();
             final Token destinationPath = copyStatementAST.child(3).valueClean();
-            final CopyStatement copyStatement = createCopyStatement(destinationPath, sourcePath);
+            final CopyStatement copyStatement = createCopyStatement(destinationPath, sourcePath, false);
+            copyStatement.parseFromAST(copyStatementAST, packScope);
+        }
+        for (final Node copyStatementAST : ast.children(COPY_STATEMENT_RAW)) {
+            final Token sourcePath = copyStatementAST.child(2).valueClean();
+            final Token destinationPath = copyStatementAST.child(4).valueClean();
+            final CopyStatement copyStatement = createCopyStatement(destinationPath, sourcePath, true);
             copyStatement.parseFromAST(copyStatementAST, packScope);
         }
     }
@@ -93,7 +100,17 @@ public class WriteContainer implements Parseable, Initializable {
     }
 
     @NotNull
-    public Set<CopyStatement> copyStatements() {
+    public Set<CopyStatement> copyStatementsRaw() {
+        return copyStatements.stream().filter(CopyStatement::raw).collect(Collectors.toUnmodifiableSet());
+    }
+
+    @NotNull
+    public Set<CopyStatement> copyStatementsFull() {
+        return copyStatements.stream().filter(c -> !c.raw()).collect(Collectors.toUnmodifiableSet());
+    }
+
+    @NotNull
+    public Set<CopyStatement> allCopyStatements() {
         return Collections.unmodifiableSet(copyStatements);
     }
 
