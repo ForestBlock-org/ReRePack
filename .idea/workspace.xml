@@ -9,11 +9,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fa8e8d78-b363-4df8-82ca-a951938c61c4" name="Changes" comment="fixed write statement bug">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/OptifineCompileTarget.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/OptifineCompileTarget.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/util/ImageSplit.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/util/ImageSplit.java" afterDir="false" />
-    </list>
+    <list default="true" id="fa8e8d78-b363-4df8-82ca-a951938c61c4" name="Changes" comment="added helpful text when character textures need to be split" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -227,7 +223,14 @@
       <option name="project" value="LOCAL" />
       <updated>1702774527775</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="added helpful text when character textures need to be split">
+      <created>1702776041329</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1702776041329</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -253,6 +256,7 @@
     <MESSAGE value="added custom language file support" />
     <MESSAGE value="added cli usage" />
     <MESSAGE value="fixed write statement bug" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed write statement bug" />
+    <MESSAGE value="added helpful text when character textures need to be split" />
+    <option name="LAST_COMMIT_MESSAGE" value="added helpful text when character textures need to be split" />
   </component>
 </project>

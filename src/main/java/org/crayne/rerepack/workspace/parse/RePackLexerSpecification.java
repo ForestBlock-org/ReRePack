@@ -42,7 +42,7 @@ public class RePackLexerSpecification extends LexerSpecification {
 
     public RePackLexerSpecification() {
         super(List.of(
-                ',', '(', ')', '{', '}', '/', '+', '=', '\'', '"', '>'
+                ',', '(', ')', '{', '}', '/', '*', '=', '\'', '"', '>'
         ), List.of(
                 "=>"
         ));
@@ -60,12 +60,12 @@ public class RePackLexerSpecification extends LexerSpecification {
 
     @NotNull
     public String multiLineCommentBegin() {
-        return "/+";
+        return "/*";
     }
 
     @NotNull
     public String multiLineCommentEnd() {
-        return "+/";
+        return "*/";
     }
 
     @SuppressWarnings("SameParameterValue")
