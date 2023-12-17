@@ -9,7 +9,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fa8e8d78-b363-4df8-82ca-a951938c61c4" name="Changes" comment="added custom language file support" />
+    <list default="true" id="fa8e8d78-b363-4df8-82ca-a951938c61c4" name="Changes" comment="added cli usage">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ReRePack.jar" beforeDir="false" afterPath="$PROJECT_DIR$/ReRePack.jar" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -202,7 +205,14 @@
       <option name="project" value="LOCAL" />
       <updated>1702771837494</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="added cli usage">
+      <created>1702772332966</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1702772332966</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -226,6 +236,7 @@
     <MESSAGE value="font file creation finished as well as recreation of space font natively" />
     <MESSAGE value="split texture support -&gt; guis can now be added easily" />
     <MESSAGE value="added custom language file support" />
-    <option name="LAST_COMMIT_MESSAGE" value="added custom language file support" />
+    <MESSAGE value="added cli usage" />
+    <option name="LAST_COMMIT_MESSAGE" value="added cli usage" />
   </component>
 </project>
