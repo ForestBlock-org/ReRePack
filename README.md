@@ -8,7 +8,7 @@ RePack works by defining a custom texture pack format, which is read from a work
 Soon.
 
 ## Example usage
-To compile a RePack workspace to a minecraft texture pack, you need to use the command line with the following command:
+Firstly, download the latest release of RePack at ![the releases page.](https://github.com/ForestBlock-net/ReRePack/releases/) To compile a RePack workspace to a minecraft texture pack, you need to use the command line with the following command:
 ```
 java -jar RePack.jar 'your/workspace/directory/filepath' 'output/directory/filepath'
 ```
