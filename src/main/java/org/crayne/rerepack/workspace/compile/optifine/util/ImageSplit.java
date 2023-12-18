@@ -20,19 +20,19 @@ public class ImageSplit {
         this.row = row;
         this.column = column;
         this.splitIndex = splitIndex;
-        this.splitImage = new BufferedImage(splitSize, splitSize, BufferedImage.TYPE_INT_ARGB);
-
-        final Graphics2D graphics2D = splitImage.createGraphics();
         final int startX = splitSize * column;
         final int startY = splitSize * row;
 
         final int endX = Math.min(startX + splitSize, sourceImage.getWidth());
         final int endY = Math.min(startY + splitSize, sourceImage.getHeight());
 
-        graphics2D.drawImage(sourceImage, 0, 0, endX - startX, endY - startY, startX, startY, endX, endY, null);
-        graphics2D.dispose();
+        final int width = endX - startX, height = endY - startY;
 
-        drawInvisibleCorner(splitImage, splitSize - 1, splitSize - 1);
+        this.splitImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        final Graphics2D graphics2D = splitImage.createGraphics();
+
+        graphics2D.drawImage(sourceImage, 0, 0, width, height, startX, startY, endX, endY, null);
+        graphics2D.dispose();
     }
 
     @NotNull
@@ -54,6 +54,7 @@ public class ImageSplit {
         for (int row = 0; row < splitRows; row++) {
             for (int col = 0; col < splitCols; col++) {
                 final boolean last = i == splits.length - 1;
+                final boolean anyLeft = i + 1 < splits.length;
 
                 final boolean endOfLine = col == splitCols - 1;
                 final int space = endOfLine ? -(scaledSplitSize * (col + 1)) - 1 : -1;
@@ -62,6 +63,7 @@ public class ImageSplit {
 
                 splits[i] = new ImageSplit(row, col, i, splitSize, sourceImage);
                 if (!last) text.append(FontResource.createFullWidthSpace(space));
+                if (anyLeft) splits[i].drawInvisibleCorner();
                 i++;
             }
         }
@@ -71,6 +73,10 @@ public class ImageSplit {
     public static void drawInvisibleCorner(@NotNull final BufferedImage image, final int x, final int y) {
         if (image.getRGB(x, y) == 0)
             image.setRGB(x, y, new Color(0, 0, 0, 1).getRGB());
+    }
+
+    public void drawInvisibleCorner() {
+        drawInvisibleCorner(splitImage, splitImage.getWidth() - 1, splitImage.getHeight() - 1);
     }
 
     @NotNull
