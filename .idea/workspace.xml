@@ -9,16 +9,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fa8e8d78-b363-4df8-82ca-a951938c61c4" name="Changes" comment="character statements bugfix to support textures smaller than 256x256px">
+    <list default="true" id="fa8e8d78-b363-4df8-82ca-a951938c61c4" name="Changes" comment="bugfix in texture file names (same filenames colliding by having a different parent directory)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/color/ansi/TextColor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/color/ansi/TextColor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/color/ansi/TextColorBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/color/ansi/TextColorBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/component/Text.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/component/Text.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/component/TextBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/component/TextBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/component/TextPart.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/util/component/TextPart.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/resource/Resource.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/resource/Resource.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/parser/ExpressionParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/parser/ExpressionParser.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,7 +52,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/crayne/forestblock/forestblock-texture-pack&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/crayne/forestblock/RePackDocs&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
@@ -282,7 +275,14 @@
       <option name="project" value="LOCAL" />
       <updated>1702936922327</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="bugfix in texture file names (same filenames colliding by having a different parent directory)">
+      <created>1703978260949</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1703978260949</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -315,6 +315,7 @@
     <MESSAGE value="added raw copy" />
     <MESSAGE value="lang statement support inside templates" />
     <MESSAGE value="character statements bugfix to support textures smaller than 256x256px" />
-    <option name="LAST_COMMIT_MESSAGE" value="character statements bugfix to support textures smaller than 256x256px" />
+    <MESSAGE value="bugfix in texture file names (same filenames colliding by having a different parent directory)" />
+    <option name="LAST_COMMIT_MESSAGE" value="bugfix in texture file names (same filenames colliding by having a different parent directory)" />
   </component>
 </project>

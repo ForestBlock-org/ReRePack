@@ -131,9 +131,10 @@ public class ExpressionParser {
     @NotNull
     public ParseResult parseScope(@NotNull final List<Token> tokens, final int startIndex,
                                   @NotNull final List<String> contentList, final boolean parent) {
-        this.contentList = new ArrayList<>(contentList);
         final Node scopeNode = parent ? Node.of(NodeType.PARENT) : Node.of(NodeType.SCOPE);
+        if (tokens.isEmpty()) return ParseResult.ok(-1, scopeNode);
 
+        this.contentList = new ArrayList<>(contentList);
         Node expressionNode = Node.of(NodeType.EXPRESSION);
 
         boolean handleDuplicateEndOfScope = false;
