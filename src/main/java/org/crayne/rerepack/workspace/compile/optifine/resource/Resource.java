@@ -10,9 +10,7 @@ public interface Resource {
 
     @NotNull
     static String fileNameOfPath(@NotNull final String filepath) {
-        return filepath.contains("/")
-                ? StringUtils.substringAfterLast(filepath, "/")
-                : filepath;
+        return filepath.replace("/", "_");
     }
 
     @NotNull

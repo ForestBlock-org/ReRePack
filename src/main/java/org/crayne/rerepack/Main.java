@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public class Main {
 
-    public static void main(@NotNull final String... args) {
+    public static void main(@NotNull final String @NotNull ... args) {
         final ExpressionParser parser = RePackParserSpecification.INSTANCE.parser();
         final Logger logger = parser.logger();
 
