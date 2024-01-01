@@ -96,6 +96,18 @@ public class OptifineCompileTarget implements CompileTarget {
         final File sourceFile = new File(workspace.directory(), source);
         final File destinationFile = new File(outputDirectory, destination);
 
+        if (sourceFile.isDirectory()) {
+            try {
+                //noinspection ResultOfMethodCallIgnored
+                destinationFile.getParentFile().mkdirs();
+                FileUtils.copyDirectory(sourceFile, destinationFile);
+            } catch (final IOException e) {
+                workspace.logger().log("Could not copy file '" + sourceFile.getAbsolutePath()
+                        + "' to '" + destinationFile.getAbsolutePath()
+                        + "': " + e.getMessage(), LoggingLevel.PACKING_ERROR);
+            }
+            return;
+        }
         if (!sourceFile.isFile()) {
             workspace.logger().log("Cannot find repack texture file '"
                     + sourceFile.getPath() + "', could not copy to output resource pack", LoggingLevel.PACKING_ERROR);

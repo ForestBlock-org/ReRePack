@@ -9,9 +9,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fa8e8d78-b363-4df8-82ca-a951938c61c4" name="Changes" comment="bugfix in texture file names (same filenames colliding by having a different parent directory)">
+    <list default="true" id="fa8e8d78-b363-4df8-82ca-a951938c61c4" name="Changes" comment="bugfix with empty repack files which will no longer break everything">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/parser/ExpressionParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/syntax/parser/ExpressionParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/OptifineCompileTarget.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/crayne/rerepack/workspace/compile/optifine/OptifineCompileTarget.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -282,7 +282,14 @@
       <option name="project" value="LOCAL" />
       <updated>1703978260949</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="bugfix with empty repack files which will no longer break everything">
+      <created>1703980075770</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1703980075770</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -316,6 +323,7 @@
     <MESSAGE value="lang statement support inside templates" />
     <MESSAGE value="character statements bugfix to support textures smaller than 256x256px" />
     <MESSAGE value="bugfix in texture file names (same filenames colliding by having a different parent directory)" />
-    <option name="LAST_COMMIT_MESSAGE" value="bugfix in texture file names (same filenames colliding by having a different parent directory)" />
+    <MESSAGE value="bugfix with empty repack files which will no longer break everything" />
+    <option name="LAST_COMMIT_MESSAGE" value="bugfix with empty repack files which will no longer break everything" />
   </component>
 </project>

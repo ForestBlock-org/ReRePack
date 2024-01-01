@@ -61,6 +61,7 @@ public class WriteStatement implements Parseable, Initializable {
     }
 
     public void initialize() throws WorkspaceException {
+        initializedDestinationPath = Definition.parseValueByDefinitions(destinationPath, definitionContainer);
         final List<Token> resultLines = new ArrayList<>();
 
         for (final Token line : lines)
@@ -68,7 +69,6 @@ public class WriteStatement implements Parseable, Initializable {
 
         lines.clear();
         lines.addAll(resultLines);
-        initializedDestinationPath = Definition.parseValueByDefinitions(destinationPath, definitionContainer);
     }
 
     @NotNull

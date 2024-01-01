@@ -51,13 +51,11 @@ public class CopyStatement extends WriteStatement {
 
     public void initialize() throws WorkspaceException {
         initializedSourcePath = Definition.parseValueByDefinitions(sourcePath, definitionContainer());
+        final File sourceFile = new File(workspace.directory(), initializedSourcePath.token());
         if (raw) {
             super.initialize();
             return;
         }
-
-        final File sourceFile = new File(workspace.directory(), initializedSourcePath.token());
-
         try {
             Files.readAllLines(sourceFile.toPath())
                     .stream()
