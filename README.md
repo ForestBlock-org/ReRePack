@@ -1,4 +1,4 @@
-# RePack
+# RePack (Currently in BETA)
 A minecraft texture pack creation tool with one major intent: decreasing effort, increasing productivity. Summed up, RePack takes away all of the time consuming parts of making a texture pack and lets you define once, then reuse multiple times.
 
 ## How?
