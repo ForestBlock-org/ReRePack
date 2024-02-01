@@ -11,7 +11,7 @@ The RePack docs can be found ![here](https://github.com/ForestBlock-org/RePackDo
 Java 17 or later.
 
 ## Example usage
-Firstly, compile ReRePack using maven. To compile a RePack workspace to a minecraft texture pack, you need to use the command line with the following command:
+Firstly, compile ReRePack using `mvn build`. To compile a RePack workspace to a minecraft texture pack, you need to use the command line with the following command:
 ```bash
 java -jar RePack.jar 'your/workspace/directory/filepath' 'output/directory/filepath'
 ```
