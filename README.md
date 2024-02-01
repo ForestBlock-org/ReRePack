@@ -4,8 +4,8 @@ A minecraft texture pack creation tool with one major intent: decreasing effort,
 ## How?
 RePack works by defining a custom texture pack format, which is read from a workspace directory of any desired file structure and then compiled to your usual minecraft texture pack. Keep in mind that some parts require Optifine to work ingame.
 
-## Wiki
-Soon.
+## Docs
+The RePack docs can be found ![here](https://github.com/ForestBlock-org/RePackDocs)
 
 ## Requirements
 RePack.jar file (![here](https://github.com/ForestBlock-net/ReRePack/releases/)), an install of Java 17 or later.
